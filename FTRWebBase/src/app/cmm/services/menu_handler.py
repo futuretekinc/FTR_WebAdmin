@@ -2,6 +2,68 @@ import pandas as pd
 from sqlalchemy.orm.util import aliased
 from app.cmm.models import *
 from app import db
+from marshmallow_sqlalchemy import ModelSchema
+
+class SCH_CM_MENU_ITEM(ModelSchema):
+    class Meta:
+        model = CM_MENU_ITEM
+
+sch_cm_menu_item = SCH_CM_MENU_ITEM(many=True)
+
+def get_top_node(menu_id, menu_items):
+    node = {'top' : {}, 'sub_1' : [] , 'sub_2' : [] }
+    for x in menu_items:
+        if menu_id == x.get('menu_id'):
+            node['top'] = x
+            x['hasChild'] = False
+            for y in menu_items:
+                
+                if x.get('menu_id') == y.get('pmenu_id'):
+                    node['sub_1'].append(y)
+                    x['hasChild'] = True
+                    y['hasChild'] = False
+                    for z in menu_items:
+                        if y.get('menu_id') == z.get('pmenu_id'):
+                            y['hasChild'] = True 
+                            node['sub_2'].append(z)
+    
+    return node
+            
+
+    r = db.session.query(CM_MENU_ITEM).all()  # @UndefinedVariable
+    r = sch_cm_menu_item.dump(r).data
+    
+    from pprint import pprint
+    tree = []
+    for x in r:
+        if x.get('depth') == 0:
+            node = get_top_node(x.get('menu_id'),r)
+            tree.append(node)
+            
+    print(tree)
+
+
+
+def find_menu():    
+    r = db.session.query(CM_MENU_ITEM).filter(CM_MENU_ITEM.use_yn == 'Y').all()
+    r = sch_cm_menu_item.dump(r).data
+    tree = []
+    for x in r:
+        if x.get('depth') == 0:
+            node = get_top_node(x.get('menu_id'),r)
+            tree.append(node)
+            
+    return tree
+
+
+
+
+if __name__ == '__main__':
+    print(find_menu())
+
+
+# MSSQL
+'''
 
 def find_menu_by_root_id(root_id):
     included_parts = db.session \
@@ -43,17 +105,6 @@ def find_menu_by_root_id(root_id):
             else:
                 pass
             
-            '''
-            if x == list(rank)[0] and len(rank) >= 1:
-                tree['top'] = g.to_dict(orient='records')[0]
-            elif x == list(rank)[1] and len(rank) >= 2:
-                tree['sub_1'] = g.to_dict(orient='records')
-#             elif x == list(rank)[2]:
-#                 tree['sub_2'] = g.to_dict(orient='records')
-            else:
-                tree['sub_2'] = g.to_dict(orient='records')
-            
-            '''
 
         for x in tree['sub_1']:
             x['hasChild'] = False
@@ -77,7 +128,5 @@ def find_menu():
 #     print(buf)
 #     print("----------")
     return buf
+'''
 
-if __name__ == '__main__':
-    from pprint import pprint 
-    pprint(find_menu_by_root_id(1))

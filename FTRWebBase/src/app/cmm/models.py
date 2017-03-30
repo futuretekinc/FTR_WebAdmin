@@ -31,11 +31,20 @@ class CM_MENU_ITEM(db.Model):
     __tablename__ = "CM_MENU_ITEM"
     menu_id = db.Column(db.Integer,primary_key=True)
     pmenu_id = db.Column(db.Integer,nullable=False,default=0)
+    depth = db.Column(db.Integer,nullable=False,default=0)
     category = db.Column(db.NVARCHAR(50),nullable=False,default="CMM")
     name = db.Column(db.NVARCHAR(30),nullable=False,default="_undefined_")
     url = db.Column(db.NVARCHAR(30),nullable=False,default="#")
     use_yn = db.Column(db.NVARCHAR(1),nullable=False,default="Y")
     sort_order = db.Column(db.Integer)
+    def as_dict(self):
+        return {
+            'menu_id' : self.menu_id
+            ,'pmenu_id' : self.pmenu_id
+            ,'depth' : self.depth
+            , 'name' : self.name
+            , 'url' : self.url
+        }
     
 class CM_USER_ROLE(db.Model):
     __tablename__ = "CM_USER_ROLE"

@@ -16,9 +16,9 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 SQLITE3 = "sqlite:///D:/tmp/single_db.db"
 AZURE_APP_DB = "mssql+pyodbc://devweb:Qvbcuxpr#123456@ftiotdb1.database.windows.net/appdb?driver=ODBC+Driver+13+for+SQL+Server"
-
+MYSQL_DB='mysql+pymysql://root:qwer1234@localhost/ftr_app_db?charset=utf8'
 #SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'app.db')
-SQLALCHEMY_DATABASE_URI = AZURE_APP_DB
+SQLALCHEMY_DATABASE_URI = MYSQL_DB
 
 SQLALCHEMY_TRACK_MODIFICATIONS = True
 SQLALCHEMY_ECHO = DEBUG
