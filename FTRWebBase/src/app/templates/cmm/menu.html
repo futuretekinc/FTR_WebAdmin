@@ -1,0 +1,88 @@
+{% extends "layout/main.html" %}
+{% from "macro/mc_menu.html" import render_menu %}
+{% from "macro/mc_header.html" import css_html_table,js_html_table %}
+
+
+<!-- CSS -->
+{% block styles %}
+{{super()}}
+{{css_html_table()}}
+{% endblock %}
+<!-- CSS -->
+
+<!-- SCRIPTS -->
+{% block scripts %}
+{{super()}}
+{{js_html_table()}}    
+    <script>
+    $(document).ready(function(){
+    	  $('#side-menu1').metisMenu();
+    });
+    </script>
+{% endblock %}
+<!-- SCRIPTS -->
+
+<!-- title -->
+{% block title %}{{title|safe}}{% endblock %}
+
+<!-- header -->
+{% block page_header %}
+<div class="row wrapper border-bottom white-bg page-heading">
+	<div class="col-lg-10">
+		<h2>{{title|safe}}</h2>
+		<ol class="breadcrumb">
+			<li><a href="/todo">Home</a></li>
+			<li><a>Tables</a></li>
+			<li class="active"><strong>Data Tables</strong></li>
+		</ol>
+	</div>
+	<div class="col-lg-2"></div>
+</div>
+{% endblock %}
+
+<!-- main block -->
+{% block page_main %}
+{{super()}}
+<!-- ----------------------------------------------------------------------------------------------------------------------------------------------------- -->
+ 
+{% macro render_dialog(title, subtitle='') -%}
+<div class="ibox float-e-margins">
+	<div class="ibox-title">
+		<h5>{{title}}<small class="m-l-sm">{{subtitle}}</small></h5>
+	</div>
+	<div class="ibox-content">
+		{{ caller() }}
+	</div>
+</div>    
+{%- endmacro %}
+
+<div class="ibox-content m-b-sm border-bottom">
+{{ render_menu(tree) }}
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

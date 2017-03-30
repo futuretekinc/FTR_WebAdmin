@@ -1,0 +1,153 @@
+{% extends "layout/main.html" %}
+{% from "macro/mc_form.html" import render_field, render_form, render_checkbox_field %}
+{% from "macro/mc_menu.html" import render_menu %}
+{% from "macro/mc_header.html" import css_html_table,js_html_table %}
+
+<!-- CSS -->
+{% block styles %}
+{{super()}}
+{{css_html_table()}}
+{% endblock %}
+<!-- CSS -->
+
+<!-- SCRIPTS -->
+{% block scripts %}
+{{super()}}
+{{js_html_table()}}    
+    <!-- assets/js -->
+    <script src="{{url_for('static',filename='assets/js/jqgrid/jqgrid_master_code.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/js/jqgrid/jqgrid_detail_code.js')}}"></script>
+    <script>
+    function search_detail(master_code) {
+    	var filters = [{"name": "comm_code", "op": "equals", "val": master_code }];
+    	$.ajax({
+    		url: '/api/CM_CODED',
+    		data: {"q": JSON.stringify({"filters": filters})},
+    		dataType: "json",
+    		contentType: "application/json",
+    		success: function(data) { 
+//            			$('#table_jqgrid_002').setGridParam({'data':data}).trigger("reloadGrid");
+    			var allParams = $('#table_jqgrid_002').jqGrid('getGridParam');
+    			allParams.data = data.objects;
+    			allParams.caption = "Master Code - " + master_code;
+    			$('#table_jqgrid_002').trigger('reloadGrid');
+    		}
+    	});
+    }
+    
+    var mcode = {{mcode|tojson}};
+    
+    $(document).ready(function(){
+    	jqGrid_master_code();
+		jqGrid_detail_code();
+		
+		$('#sel_comm_code').change(function(){
+			swal($(this).val());
+			search_detail($(this).val())
+		});
+    });
+    </script>
+
+{% endblock %}
+<!-- SCRIPTS -->
+
+<!-- title -->
+{% block title %}{{title|safe}}{% endblock %}
+
+<!-- header -->
+{% block page_header %}
+{{ render_breadscrumb(title=title,sub_1="시스템코드관리",sub_2="코드등록") }}
+{% endblock %}
+
+<!-- main block -->
+{% block page_main %}
+{{super()}}
+<!-- BEGIN-MAIN -->
+
+
+<div class="row">
+
+<div class="col-lg-8">
+			<div class="jqgrid_div">
+			 <h4><i class="fa fa-tag"></i> Master Code</h4>
+				<table id="table_jqgrid_001"><tr><td></td></tr></table>
+				<div id="table_jqgrid_001_page"></div>
+			<p>&nbsp;</p>
+				 <h4><i class="fa fa-tags"></i> Detail Code</h4>
+					<table id="table_jqgrid_002"><tr><td></td></tr></table>
+					<div id="table_jqgrid_002_page"></div>
+			</div>
+</div>
+
+<div class="col-lg-4">
+                    <div class="tabs-container">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#tab-1" aria-expanded="true"><i class="fa fa-tag"></i> 마스터코드 등록</a></li>
+                            <li class=""><a data-toggle="tab" href="#tab-2" aria-expanded="false"><i class="fa fa-tags"></i> 상세코드 등록</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div id="tab-1" class="tab-pane active">
+                                <div class="panel-body">
+                                {% call render_form(mform, action_url='/cmm/master_code', action_text='등록', class_='form',btn_class='btn btn-primary') %}
+    								{{ render_field(mform.comm_code) }}
+    								{{ render_field(mform.comm_cdnm) }}
+									{{ render_field(mform.re1f_desc) }} 
+									{{ render_field(mform.re2f_desc) }} 
+									{{ render_field(mform.re3f_desc) }} 
+									{{ render_field(mform.re4f_desc) }} 
+								{% endcall %}
+                                </div>
+                            </div>
+                            <div id="tab-2" class="tab-pane">
+                                <div class="panel-body">
+                                {% call render_form(dform, action_url='/cmm/detail_code', action_text='등록', class_='form',btn_class='btn btn-primary') %}
+                                	<div class="form-group  ">
+                                	<label for="comm_code" class="control-label"><label for="comm_code">마스터코드</label></label>
+                                	<select id="sel_comm_code" name="comm_code" class="form-control">
+    								{% for mc in mcode.result %}
+    									<option value="{{mc.comm_code}}">{{mc.comm_code}}</option>
+    								{% endfor %}
+                                	</select>
+                                	</div>
+    								{{ render_field(dform.comd_code) }}
+    								{{ render_field(dform.comd_cdnm) }}
+									{{ render_field(dform.ref1_fild) }} 
+									{{ render_field(dform.ref2_fild) }} 
+									{{ render_field(dform.ref3_fild) }} 
+									{{ render_field(dform.ref4_fild) }} 
+								{% endcall %}                                
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+</div>
+
+<!-- END-MAIN -->
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

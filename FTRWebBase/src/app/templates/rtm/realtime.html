@@ -1,0 +1,74 @@
+{% extends "layout/main.html" %}
+{% from "macro/mc_form.html" import render_field, render_form, render_checkbox_field %}
+{% from "macro/mc_header.html" import css_html_table,js_html_table %}
+
+<!-- CSS -->
+{% block styles %}
+{{super()}}
+{{css_html_table()}}
+{% endblock %}
+<!-- CSS -->
+
+<!-- SCRIPTS -->
+{% block scripts %}
+{{super()}}
+{{js_html_table()}}  
+<script src="http://code.highcharts.com/highcharts.js"></script>  
+<script type="text/javascript">
+$(document).ready(function(){
+	//var options = {};
+	//Highcharts.chart('container', options);
+	Highcharts.chart('container', {'legend': {'layout': 'vertical', 'middle': 'vertical', 'right': 'vertical'},
+		 'plotOptions': {'series': {'pointStart': 2010}},
+		 'series': [{'data': [43934,
+		                      52503,
+		                      57177,
+		                      69658,
+		                      97031,
+		                      119931,
+		                      137133,
+		                      154175],
+		             'name': 'A'},
+		            {'data': [24334,
+		                      25253,
+		                      27177,
+		                      26958,
+		                      29031,
+		                      219931,
+		                      237133,
+		                      214175],
+		             'name': 'B'}],
+		 'subtitle': {'text': 'source: thesolarfoundation.com'},
+		 'title': {'text': 'Solar Employment Growth by Sector, 2010-2017'},
+		 'yAxis': {'title': {'text': 'Number of Employees'}}}
+		);
+});
+</script>
+
+{% endblock %}
+<!-- SCRIPTS -->
+
+<!-- title -->
+{% block title %}{{title|safe}}{% endblock %}
+
+<!-- header -->
+{% block page_header %}
+{{ render_breadscrumb(title=title,sub_1="실시간모니터링",sub_2="차트예제") }}
+{% endblock %}
+
+<!-- main block -->
+{% block page_main %}
+{{super()}}
+<!-- BEGIN-MAIN -->
+<div class="ibox-content m-b-sm border-bottom">
+	<div class="row table-responsive">
+		<div class="col-lg-12">
+			<div id='container'></div>
+		</div>
+	</div>
+</div>
+<!-- END-MAIN -->
+
+{% endblock page_main %}
+
+

@@ -1,0 +1,132 @@
+{% extends "layout/main.html" %}
+
+<!-- CSS -->
+{% block styles %}
+{{super()}}
+    <link href="{{url_for('static',filename='css/plugins/dataTables/datatables.min.css')}}" rel="stylesheet">
+    
+    <!-- Sweet Alert -->
+    <link href="{{url_for('static',filename='css/plugins/sweetalert/sweetalert.css')}}" rel="stylesheet">
+
+	<!-- jqGrid -->
+	<link href="{{url_for('static',filename='css/plugins/jQueryUI/jquery-ui-1.10.4.custom.min.css')}}" rel="stylesheet">
+	<link href="{{url_for('static',filename='css/plugins/jqGrid/ui.jqgrid.css')}}" rel="stylesheet">
+     <style>
+        /* Additional style to fix warning dialog position*/ 
+       #alertmod_table_list_2 {
+            top: 900px !important;
+        }
+        .jqgrid_div {
+        	margin:0;
+        	width:99%;
+        }
+    </style>
+{% endblock %}
+<!-- CSS -->
+
+<!-- SCRIPTS -->
+{% block scripts %}
+{{super()}}
+    <!-- DataTables -->
+    <script src="{{url_for('static',filename='js/plugins/dataTables/datatables.min.js')}}"></script>
+    
+    <!-- Sweet alert -->
+    <script src="{{url_for('static',filename='js/plugins/sweetalert/sweetalert.min.js')}}"></script>
+    <!-- Peity -->
+    <script src="{{url_for('static',filename='js/plugins/peity/jquery.peity.min.js')}}"></script>
+
+    <!-- jqGrid -->
+    <script src="{{url_for('static',filename='js/plugins/jqGrid/i18n/grid.locale-en.js')}}"></script>
+    <script src="{{url_for('static',filename='js/plugins/jqGrid/jquery.jqGrid.min.js')}}"></script>
+    
+    <!-- assets/js -->
+    <script src="{{url_for('static',filename='assets/js/jqgrid/jqgrid_master_code.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/js/jqgrid/jqgrid_detail_code.js')}}"></script>
+    
+    <script>
+    $(document).ready(function(){
+		jqGrid_master_code();
+		jqGrid_detail_code();
+    });
+    </script>
+
+{% endblock %}
+<!-- SCRIPTS -->
+
+<!-- title -->
+{% block title %}{{title|safe}}{% endblock %}
+
+<!-- header -->
+{% block page_header %}
+<div class="row wrapper border-bottom white-bg page-heading">
+	<div class="col-lg-10">
+		<h2>{{title|safe}}</h2>
+		<ol class="breadcrumb">
+			<li><a href="/todo">Home</a></li>
+			<li><a>Tables</a></li>
+			<li class="active"><strong>Data Tables</strong></li>
+		</ol>
+	</div>
+	<div class="col-lg-2"></div>
+</div>
+{% endblock %}
+
+
+<!-- main block -->
+{% block page_main %}
+{{super()}}
+
+<!-- ----------------------------------------------------------------------------------------------------------------------------------------------------- -->
+
+<div class="ibox-content m-b-sm border-bottom">
+
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="jqgrid_div">
+			 <h4><i class="fa fa-tag"></i> Master Code</h4>
+			 <hr>
+				<table id="table_jqgrid_001"><tr><td></td></tr></table>
+				<div id="table_jqgrid_001_page"></div>
+			</div>
+		</div>
+		<div class="col-lg-12">
+		<p>&nbsp;</p>
+			<hr class="hr-line-dashed">
+		</div>
+		<div class="col-lg-12">
+			<div class="jqgrid_div">
+				 <h4><i class="fa fa-tags"></i> Detail Code</h4>
+			 <hr>
+					<table id="table_jqgrid_002"><tr><td></td></tr></table>
+					<div id="table_jqgrid_002_page"></div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

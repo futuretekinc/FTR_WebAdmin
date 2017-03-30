@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <title>{% block title %}FuturTek | WebAdmin{% endblock %}</title>
+
+    <link href="{{url_for('static',filename='css/bootstrap.min.css')}}" rel="stylesheet">
+    <link href="{{url_for('static',filename='font-awesome/css/font-awesome.css')}}" rel="stylesheet">
+    <link href="{{url_for('static',filename='css/animate.css')}}" rel="stylesheet">
+{% block styles %}
+{% endblock %}
+    <link href="{{url_for('static',filename='css/style.css')}}" rel="stylesheet">
+
+</head>
+
+<body {% block body_type %}{% endblock %}>
+{% block content %}
+{% endblock %}
+
+<!-- Mainly scripts -->
+<script src="{{url_for('static',filename='js/jquery-3.1.1.min.js')}}"></script>
+<script src="{{url_for('static',filename='js/bootstrap.min.js')}}"></script>    
+<script src="{{url_for('static',filename='assets/js/admin/ftr_extend.js')}}"></script>
+{% block scripts %}
+{% endblock %}
+</body>
+
+</html>

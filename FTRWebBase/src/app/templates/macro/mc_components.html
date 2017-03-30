@@ -1,0 +1,40 @@
+{% macro render_multiselect(etypes) -%}
+<!-- <div class="ibox-content m-b-sm border-bottom"> 
+<div class="ibox-content ">
+-->
+	<div class="row">
+		<div class="col-xs-5">
+			<h4>▣ 엔드포인트 목록</h4>
+			<select name="from" id="multiselect" class="form-control" size="8" multiple="multiple">
+				{% for etype in etypes %}
+					<option value="{{loop.index}}">{{etype.ep_type}}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div class="col-xs-2">
+			<h4>&nbsp;</h4>
+			<button type="button" id="multiselect_rightAll" class="btn btn-block">
+				<i class="glyphicon glyphicon-forward"></i>
+			</button>
+			<button type="button" id="multiselect_rightSelected"
+				class="btn btn-block">
+				<i class="glyphicon glyphicon-chevron-right"></i>
+			</button>
+			<button type="button" id="multiselect_leftSelected"
+				class="btn btn-block">
+				<i class="glyphicon glyphicon-chevron-left"></i>
+			</button>
+			<button type="button" id="multiselect_leftAll" class="btn btn-block">
+				<i class="glyphicon glyphicon-backward"></i>
+			</button>
+		</div>
+		<div class="col-xs-5">
+			<h4>▣ 디바이스 엔드포인트</h4>
+			<select name="to" id="multiselect_to" class="form-control" size="8" multiple="multiple">
+			</select>
+		</div>
+	</div>
+<!-- 
+</div>
+ -->
+{%- endmacro %}

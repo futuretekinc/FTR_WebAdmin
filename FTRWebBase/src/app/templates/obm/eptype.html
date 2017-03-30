@@ -1,0 +1,170 @@
+{% extends "layout/main.html" %}
+{% from "macro/mc_form.html" import render_field, render_form,render_form_noSubmit, render_checkbox_field %}
+{% from "macro/mc_header.html" import css_html_table,js_html_table %}
+{% from "obm/obm_tables.html" import show_eptype_table,foo_table %}
+
+<!-- CSS -->
+{% block styles %}
+{{super()}}
+{{css_html_table()}}
+<style>
+.ftr_table_delete {
+	cursor: pointer; cursor: hand;
+}
+</style>
+{% endblock %}
+<!-- CSS -->
+
+<!-- SCRIPTS -->
+{% block scripts %}
+{{super()}}
+{{js_html_table()}}  
+<script src="{{url_for('static',filename='assets/js/obm/obm_tables.js')}}"></script>
+  
+<script type="text/javascript">
+
+function fn_onDelete(eptype) {
+	var $form = $('<form></form>');
+	$form.attr({'action' : '/obm/eptype_delete'});
+	$form.attr({'method' : 'post'});
+	$form.appendTo(document.body);
+	
+	var input_epType = $('<input type="hidden" name="ep_type" value="'+eptype+'"/>')
+	$form.append(input_epType);
+	$form.submit();
+}
+
+function fn_onNew() {
+	location.href='/obm/eptype'
+}
+
+function fn_onSave() {
+	var $form = $('#form_id');
+	$form.attr({'action' : '/obm/eptype_save'});
+	$form.attr({'method' : 'POST'});
+	$form.submit();
+}
+
+function fn_onUpdate() {
+	var $form = $('#form_id');
+	$form.attr({'action' : '/obm/eptype_update'});
+	$form.attr({'method' : 'POST'});
+	$form.submit();
+}
+
+$(document).ready(function(){
+	show_eptype_table();
+	$(document).on('click','.ftr_table_delete',function(){
+		var key = $(this).attr('key');
+		ftr_alert_confirm_normal("엔트리 타입 ["+key+"]를 삭제 하시겠습니까?", function(result) {
+			if(false == result) {
+				/* false - nothing */
+				return;
+			}
+			fn_onDelete(key);
+		});
+	});
+	
+	$('#form_new').click(fn_onNew);
+	$('#form_save').click(fn_onSave);
+	$('#form_update').click(fn_onUpdate);
+	
+	$(document).on('click','.table_view tr',function(){
+		var $this = $(this);
+		function _text(obj, index) {
+			return $(obj).find('td:eq('+index+')').text();
+		}
+		var names = [
+			'ep_type' ,'ep_name'
+			,'ep_unit' , 'ep_pr_host' , 'ep_interval' , 'ep_limit'
+			, 'ep_hour', 'ep_day', 'ep_month', 'ep_count'
+		];
+		
+		for(var i = 0; i < names.length; i++) {
+			//console.log(names[i]);
+			//console.log(_text(i))
+			$('#form_id [name='+names[i]+']').val(_text($this,i));
+		}
+		
+//		console.log('click row-->'+JSON.stringify($(this),null,' '))
+//		console.log($(this).find('td:eq(0)').text())
+
+   });
+	
+});
+</script>
+
+{% endblock %}
+<!-- SCRIPTS -->
+
+<!-- title -->
+{% block title %}{{title|safe}}{% endblock %}
+
+<!-- header -->
+{% block page_header %}
+{{ render_breadscrumb(title=title,sub_1="엔드포인트 타입 관리") }}
+{% endblock %}
+
+<!-- main block -->
+{% block page_main %}
+{{super()}}
+<!-- BEGIN-MAIN -->
+	<div class="row table-responsive">
+		<div class="col-lg-12">
+		<div class="ibox-content m-b-sm border-bottom">
+			<!-- END_POINT -->
+			{# call render_form(form, action_url='/obm/eptype_save', action_text='등록', class_='form',btn_class='btn btn-primary') #}
+			{% call render_form_noSubmit(form, form_id='form_id') %}
+			<div class="row">
+				<div class="col-sm-2">
+				{{ render_field(form.ep_type) }}
+				</div>
+				<div class="col-sm-2">
+				{{ render_field(form.ep_name) }}
+				</div>
+				<div class="col-sm-2">
+				{{ render_field(form.ep_unit) }}
+				</div>
+				<div class="col-sm-2">
+				{{ render_field(form.ep_pr_host) }}
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-2">
+				{{ render_field(form.ep_interval) }}
+				</div>
+				<div class="col-sm-2">
+				{{ render_field(form.ep_limit) }}
+				</div>
+				<div class="col-sm-2">
+				{{ render_field(form.ep_hour) }}
+				</div>
+				<div class="col-sm-2">
+				{{ render_field(form.ep_day) }}
+				</div>
+				<div class="col-sm-2">
+				{{ render_field(form.ep_month) }}
+				</div>
+				<div class="col-sm-2">
+				{{ render_field(form.ep_count) }}
+				</div>
+			</div>
+			{% endcall %}		
+			<div class="text-right">
+				<button id="form_new" class='btn btn-default'>신규</button>
+				<button id="form_update" class='btn btn-primary'>수정</button>
+				<button id="form_save" class='btn btn-success'>저장</button>
+			</div>
+		</div>
+	</div>
+		<div class="col-lg-12">
+			<div class="ibox-content m-b-sm border-bottom">
+			{{ show_eptype_table() }}
+			</div>
+		</div>
+</div>
+<!-- END-MAIN -->
+
+{% endblock page_main %}
+
+

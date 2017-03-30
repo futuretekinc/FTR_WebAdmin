@@ -1,0 +1,34 @@
+{% macro render_menu_item(tree) -%}
+<li id="ftr_menu">
+	<a href="{{tree.top.url}}"><i class="fa fa-th-large"></i><span class="nav-label">{{tree.top.name}}</span>{% if tree.sub_1 %}<span class="fa arrow"></span>{% endif %}</a>
+	{% if tree.sub_1 %}
+	<ul class="nav nav-second-level">
+		{% for x in tree.sub_1 %}
+		<li id="M1_{{x.menu_id}}" class='sub_1_menu'><a href="{{x.url}}">{{x.name}} {% if x.hasChild %} <span class="fa arrow"></span> {% endif %} </a>
+			{% if x.hasChild %}
+			<ul class="nav nav-third-level collapse">
+				{% for y in tree.sub_2 %}
+					{% if x.menu_id == y.pmenu_id %} 
+					<li id='M2_{{y.pmenu_id}}_{{y.menu_id}}'> <a href="{{y.url}}">{{y.name}}</a> </li>
+					{% endif %}
+				{% endfor %}
+			</ul>
+			{% endif %}
+		</li>
+		{% endfor %}
+	</ul>
+	{% endif %}
+</li>   
+{%- endmacro %}
+
+{% macro render_menu(tree) -%}
+<nav class="navbar-default navbar-static-side" role="navigation">
+	<div class="sidebar-collapse">
+		<ul class="nav metismenu" id="side-menu">
+		{% for menu in tree %}
+			{{render_menu_item(menu)}}
+		{% endfor %}
+		</ul>
+	</div>
+</nav>
+{%- endmacro %}

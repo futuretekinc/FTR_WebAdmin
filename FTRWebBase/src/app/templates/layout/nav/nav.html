@@ -1,0 +1,93 @@
+<nav class="navbar-default navbar-static-side" role="navigation">
+	<div class="sidebar-collapse">
+		<ul class="nav metismenu" id="side-menu">
+			<!-- USER PROFILE -->
+			<li class="nav-header">
+				<div class="dropdown profile-element"> 
+				<!-- 
+					<span><img alt="image" class="img-circle" src="img/build2.png" width="48px" height="48px" /></span>
+				 -->
+					<span><img alt="image" class="img-circle" src="/img/profile_small.jpg" width="48px" height="48px" /></span>
+					<span class="clear"> <span class="block m-t-xs"> <strong class="font-bold">{{username}}</strong>
+					</span> <span class="text-muted text-xs block">Administrator</span> </span> 
+				</div>
+				<div class="logo-element">FTR</div>
+			</li>
+			<!-- end USER PROFILE -->
+			<li>
+				<a href="#"><i class="fa fa-th-large"></i><span class="nav-label">샘플페이지</span><span class="fa arrow"></span></a>
+				<ul class="nav nav-second-level">
+					<li><a href="/cmm/toastr">토스트</a></li>
+					<li><a href="/cmm/todo">TODO리스트</a></li>
+					<li><a href="/cmm/jqgrid">jqgrid</a></li>
+					<li><a href="/cmm/menu">menu관리</a></li>
+				</ul>
+			</li>                    
+			<li>
+				<a href="#"><i class="fa fa-th-large"></i><span class="nav-label">시스템관리</span><span class="fa arrow"></span></a>
+				<ul class="nav nav-second-level">
+					<li>
+                            <a href="#">시스템코드관리<span class="fa arrow"></span></a>
+                            <ul class="nav nav-third-level collapse">
+                                <li> <a href="/cmm/editcode">코드등록</a> </li>
+                                <li> <a href="/cmm/syscode">코드조회</a> </li>
+                                <li> <a href="#">Third Level Item</a> </li>
+                                <li> <a href="#">Third Level Item</a> </li>
+                            </ul>
+                    </li>
+					<li><a href="#">사용자관리</a></li>
+					<li><a href="#">메뉴관리</a></li>
+					<li><a href="#">시스템 통계</a></li>
+					<li><a href="#">로그분석</a></li>
+				</ul>
+			</li>                    
+			<li>
+				<a href="#"><i class="fa fa-th-large"></i> <span class="nav-label">오브젝트관리</span>  <span class="fa arrow"></span></a>
+				<ul class="nav nav-second-level">
+					<li><a href="#">자원관리</a></li>
+					<li><a href="#">게이트웨이관리</a></li>
+					<li><a href="#">디바이스관리</a></li>
+					<li><a href="#">엔드포인트관리</a></li>
+				</ul>
+			</li>                    
+			<li>
+				<a href="#"><i class="fa fa-th-large"></i> <span class="nav-label">이벤트관리</span>  <span class="fa arrow"></span></a>
+				<ul class="nav nav-second-level">
+					<li><a href="#">이벤트관리</a></li>
+				</ul>
+			</li>                    
+			<li>
+				<a href="#"><i class="fa fa-th-large"></i> <span class="nav-label">실시간모니터링</span>  <span class="fa arrow"></span></a>
+				<ul class="nav nav-second-level">
+					<li><a href="#">실시간 데이터수집상태</a></li>
+					<li><a href="#">장치상태감시</a></li>
+					<li><a href="#">네트워크감시</a></li>
+				</ul>
+			</li>                    
+			<li>
+				<a href="#"><i class="fa fa-th-large"></i> <span class="nav-label">원격제어</span></a>
+			</li>                    
+			<li>
+				<a href="#"><i class="fa fa-th-large"></i> <span class="nav-label">API</span></a>
+			</li>   
+			<li>
+				<a href="#"><i class="fa fa-sitemap"></i> <span class="nav-label">Menu Levels </span><span class="fa arrow"></span></a>
+					<ul class="nav nav-second-level collapse">
+                        <li>
+                            <a href="#">Third Level <span class="fa arrow"></span></a>
+                            <ul class="nav nav-third-level collapse">
+                                <li> <a href="#">Third Level Item</a> </li>
+                                <li> <a href="#">Third Level Item</a> </li>
+                                <li> <a href="#">Third Level Item</a> </li>
+                            </ul>
+                        </li>
+                        <li><a href="#">Second Level Item</a></li>
+                        <li> <a href="#">Second Level Item</a></li> 
+                        <li> <a href="#">Second Level Item</a></li> 
+					</ul>
+			</li>
+		</ul>
+	</div>
+</nav> 
+
+{% include "layout/nav/top_nav.html" %}

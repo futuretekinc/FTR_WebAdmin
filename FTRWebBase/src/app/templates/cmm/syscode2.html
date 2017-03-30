@@ -1,0 +1,206 @@
+{% extends "layout/main.html" %}
+
+<!-- CSS -->
+{% block styles %}
+{{super()}}
+    <link href="{{url_for('static',filename='css/plugins/dataTables/datatables.min.css')}}" rel="stylesheet">
+    
+    <!-- Sweet Alert -->
+    <link href="{{url_for('static',filename='css/plugins/sweetalert/sweetalert.css')}}" rel="stylesheet">
+    
+{% endblock %}
+<!-- CSS -->
+
+<!-- SCRIPTS -->
+{% block scripts %}
+{{super()}}
+    <!-- DataTables -->
+    <script src="{{url_for('static',filename='js/plugins/dataTables/datatables.min.js')}}"></script>
+    
+    <!-- Sweet alert -->
+    <script src="{{url_for('static',filename='js/plugins/sweetalert/sweetalert.min.js')}}"></script>
+    <!-- 
+    http://t4t5.github.io/sweetalert/
+     -->
+    <script>
+    function test_alert() {
+    	//sweetAlert("Oops...", "Something went wrong!", "error");
+    	swal("Here's a message!");
+    	swal("Good job!", "You clicked the button!", "success");
+    }
+    function fnLoadAjaxCodeDetail(codem) {
+        $('.dataTables-example2').DataTable({
+			'processing' : true,
+			'bLengthChange' : false,
+			destroy: true,
+     	   'ajax' : {
+     		   'url' : '/api/CM_CODEM/' + codem,
+     		   'dataSrc' : function(jsonObj) {
+     			   //console.log(JSON.stringify(jsonObj))
+     			   if(!jsonObj || !jsonObj.tm_coded) {
+     				   return [];
+     			   }
+     			   
+     			   return jsonObj.tm_coded;
+     		   }
+     	   },
+     	   'columns' : [
+				{'data' : 'comd_code'},
+				{'data' : 'comd_cdnm'},
+				{'data' : 'ref1_fild'},
+				{'data' : 'ref2_fild'},
+				{'data' : 'ref3_fild'},
+				{'data' : 'ref4_fild'},
+     	   ],
+        });    	
+    }
+    $(document).ready(function(){
+       var table = $('.dataTables-example').DataTable({
+            pageLength: 15,
+            responsive: true,
+            //scrollY: 400,
+            destroy: true,
+            bLengthChange: false, // hide entries select box 
+            //dom: '<"html5buttons"B>lTfgitp',
+           // buttons: [
+          //      {extend: 'excel', title: 'ExampleFile'},
+          //  ]
+        });
+
+       $('.table_view').on('click','tr',function(){
+ 			var code = $(this).find('.comm_code').text()
+ 			if (!code || code != '') {
+				 console.log('selected >> ' + code);
+				 fnLoadAjaxCodeDetail(code);
+ 			}
+       });
+
+       
+       
+       
+       
+       
+       
+       
+    });
+    </script>
+
+
+{% endblock %}
+<!-- SCRIPTS -->
+
+<!-- title -->
+{% block title %}{{title|safe}}{% endblock %}
+
+<!-- header -->
+{% block page_header %}
+<div class="row wrapper border-bottom white-bg page-heading">
+	<div class="col-lg-10">
+		<h2>{{title|safe}}</h2>
+		<ol class="breadcrumb">
+			<li><a href="/todo">Home</a></li>
+			<li><a>Tables</a></li>
+			<li class="active"><strong>Data Tables</strong></li>
+		</ol>
+	</div>
+	<div class="col-lg-2"></div>
+</div>
+{% endblock %}
+
+
+<!-- main block -->
+{% block page_main %}
+{{super()}}
+
+<div class="row">
+	<div class="col-lg-5">
+		<div class="ibox float-e-margins">
+			<div class="ibox-title">
+				<h5>코드 마스터 테이블</h5>
+				<div class="ibox-tools">
+					<!-- <a class="collapse-link"> <i class="fa fa-chevron-up"></i> </a> -->
+					<span class="pull-right"><button class="btn btn-xs btn-success btn-outline" onClick='test_alert()'>New</button></span>
+				</div>
+			</div>
+			<div class="ibox-content">
+	<!-- 			<div class="table-responsive"> -->
+				<div>
+					<table class="table table-striped table-bordered table-hover dataTables-example" style="margin:5px">
+						<colgroup>
+							<col width="40%"/>
+							<col width="40%"/>
+							<col width="20%"/>
+						</colgroup>
+						<thead>
+							<tr>
+								<th class="text-center">마스터코드</th>
+								<th class="text-center">코드설명</th>
+								<th class="text-center">관리</th>
+								<!-- <th class="text-center">보조1</th>
+								<th class="text-center">보조2</th>
+								<th class="text-center">보조3</th>
+								<th class="text-center">보조4</th> -->
+							</tr>
+						</thead>
+						<tbody class="table_view">
+							{% for code in codem %}
+							<tr>
+								<td class="text-center comm_code">{{ code.comm_code }}</td>
+								<td class="text-center">{{ code.comm_cdnm }}</td>
+								<td class="text-center"> <a class="btn btn-xs btn-danger btn-outline" href="javascript:test_alert();">수정</a> </td>
+								<!-- <td class="text-center">{{ code.re1f_desc }}</td>
+								<td class="text-center">{{ code.re2f_desc }}</td>
+								<td class="text-center">{{ code.re3f_desc }}</td>
+								<td class="text-center">{{ code.re4f_desc }}</td> -->
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-7">
+		<div class="ibox float-e-margins">
+			<div class="ibox-title">
+				<h5>코드 상세 테이블</h5>
+				<div class="ibox-tools">
+					<a class="collapse-link"> <i class="fa fa-chevron-up"></i>
+					</a>
+				</div>
+			</div>
+			<div class="ibox-content">
+				<div class="table-responsive">
+					<table class="table table-striped table-bordered table-hover dataTables-example2">
+						<colgroup>
+							<col width="20%"/>
+							<col width="20%"/>
+							<col width="15%"/>
+							<col width="15%"/>
+							<col width="15%"/>
+							<col width="15%"/>
+						</colgroup>					
+						<thead>
+							<tr>
+								<th class="text-center">코드</th>
+								<th class="text-center">코드설명</th>
+								<th class="text-center">보조1</th>
+								<th class="text-center">보조2</th>
+								<th class="text-center">보조3</th>
+								<th class="text-center">보조4</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td class="text-center" colspan="6">No Data</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>			
+	</div>
+	
+</div>
+
+{% endblock %}

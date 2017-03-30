@@ -1,0 +1,370 @@
+{% extends "layout/main.html" %}
+{% from "macro/mc_form.html" import render_field, render_form,render_form_noSubmit, render_checkbox_field,render_date_field %}
+{% from "macro/mc_header.html" import css_html_table,js_html_table %}
+{% from "macro/mc_components.html" import render_multiselect %}
+{% from "obm/obm_tables.html" import show_eptype_table_readonly  %}
+
+<!-- CSS -->
+{% block styles %}
+{{super()}}
+{{css_html_table()}}
+<style>
+.no-border {
+	border:0;
+	box-shadow:none; 
+}
+</style>
+{% endblock %}
+<!-- CSS -->
+
+<!-- SCRIPTS -->
+{% block scripts %}
+{{super()}}
+{{js_html_table()}}  
+
+<script src="{{url_for('static',filename='assets/js/multiselect/multiselect.js')}}"></script>
+<script src="{{url_for('static',filename='assets/js/obm/obm_tables.js')}}"></script>
+  
+<script type="text/javascript">
+
+$(document).ready(function(){
+	fn_openMenu('M2_13_28');
+});
+
+/**
+ * 미리 정의된 디바이스 타입 목록을 가져온다.
+ */
+function fn_loadAllDeviceTypes() {
+	return $.postJSON('/obm/devtype',function(d){
+		//console.log(JSON.stringify(d,null,'   '));
+		var allData = d['data'];
+		var $select = $('select[name=dev_type]');
+		if (false == $.isEmptyObject(allData)) {
+			$select.html('');
+			$.each(allData, function(k,v){
+				var dv_type = v['dv_type'];
+				var dv_name = v['dv_name'];
+				var $option = $('<option></option>').val(dv_type).text(dv_name);
+				$select.append($option);
+			});
+		}
+	});
+}
+
+function render_datatable2(url, columns) {
+	$('.dataTables-eptype').DataTable({
+		'processing' : true 
+		, 'bLengthChange' : false
+		, 'destroy' : true 
+		, 'ajax' : {
+			'url' : url ,
+			'type' : 'GET' ,
+		}
+		, 'columns' : columns
+		, 'columnDefs' : [ {'className' : 'text-center', 'targets' : 'all'} ]
+	});    	
+}
+/**
+ * 디바이스 목록이 변경이 일어났을 경우, 엔드포인트 타입을 갱신하는 콜백함수
+ */
+function fn_onChangeDeviceType() {
+	
+	var targetUrl = '/obm/devtype_map';
+	var dv_type = $('select[name=dev_type]').val();
+	$.getJSON(targetUrl,{'dv_type' : dv_type}, function(d){
+		console.log('get-data');
+		console.log(d);
+		
+	$('#id_dev_type').text(dv_type);
+	
+	var eptypes = d['eptypes'];
+	var ds = [];
+	
+	for (var i = 0; i < eptypes.length; i++) {
+		var obj = eptypes[i];
+		var buf = [];
+		buf.push(obj['ep_type']);
+		buf.push(obj['ep_name']);
+		buf.push(obj['ep_unit']);
+		buf.push(obj['ep_pr_host']);
+		buf.push(obj['ep_interval']);
+		buf.push(obj['ep_limit']);
+		buf.push(obj['ep_hour']);
+		buf.push(obj['ep_day']);
+		buf.push(obj['ep_month']);
+		buf.push(obj['ep_count']);
+		ds.push(buf);
+	}
+	console.log(ds);
+		$('.dataTables-eptype').DataTable({
+			'processing' : true 
+			, 'bLengthChange' : false
+			, 'destroy' : true
+			, 'responsive' : true
+			//, 'ajax' : {
+			//	'url' : url ,
+			//	'type' : 'GET' ,
+			//}
+			//, 'columns' : columns
+			, 'data' : ds
+			, 'columnDefs' : [ {'className' : 'text-center', 'targets' : 'all'} ]
+		});  
+	});
+	
+	//render_datatable2(targetUrl+'?dv_type'+dv_type,columns);
+}
+
+function fn_onSelectTab2() {
+	// 디바이스 타입 목록 가져오기
+	fn_loadAllDeviceTypes().done(function(){
+		fn_onChangeDeviceType();
+		//show_eptype_table_readonly();
+	});
+	//console.log('--<< {{session['tree']|tojson}}');
+}
+
+
+$(document).ready(function(){
+	$.openMenu('M2_13_28');
+	//fn_onSelectTab2();
+	
+	$('#tab2').on('click',fn_onSelectTab2);
+	$('select[name=dev_type]').change(fn_onChangeDeviceType);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function fn_isActiveTab1() {
+	if(false == $('#tab-1').hasClass('active')) {
+		bootbox.alert("엔드포인트 설정 화면에서는 삭제 할 수 없습니다.");
+		return false;
+	}
+	return true;
+}
+
+function fn_onDelete(dvtype) {
+	if ($('#tab-1').hasClass('active')) {
+		var $form = $('<form></form>');
+		$form.attr({'action' : '/obm/devtype_delete'});
+		$form.attr({'method' : 'post'});
+		$form.appendTo(document.body);
+		
+		var input_dvType = $('<input type="hidden" name="dv_type" value="'+dvtype+'"/>')
+		$form.append(input_dvType);
+		$form.submit();
+	}
+}
+ 
+function fn_onNew() {
+	location.href='/obm/devtype'
+}
+
+function fn_onSave() {
+	var $form = $('#form_id');
+	$form.attr({'action' : '/obm/devtype_save'});
+	$form.attr({'method' : 'POST'});
+	$form.submit();
+}
+
+function fn_onUpdate() {
+	var $form = $('#form_id');
+	$form.attr({'action' : '/obm/devtype_update'});
+	$form.attr({'method' : 'POST'});
+	$form.submit();
+}
+
+/**
+ * 디바이스에 속해 있는 모든 엔드포인트 리스트를 가져온다.
+ multiselect
+ multiselect_to
+ */
+function fn_loadEntryForDevice(dv_type) {
+	var param = {'dv_type' : dv_type }
+	return $.getJSON('/obm/devtype_map', param , function(d){
+		console.log(d);
+		var sel = d['selected'];
+		var unsel = d['unselected'];
+		var $unsel_combo = $('#multiselect')
+		var $sel_combo = $('#multiselect_to')
+		console.log(sel);
+		$sel_combo.html('');
+		$unsel_combo.html('');
+		
+		for(var i = 0; i < sel.length; i++) {
+			$sel_combo.append('<option>'+sel[i]+'</option>');
+		}
+
+		for(var i = 0; i < unsel.length; i++) {
+			$unsel_combo.append('<option>'+unsel[i]+'</option>');
+		}
+	});
+}
+
+
+function fn_updateEntryForDevice(e) {
+	
+	e.preventDefault();
+	
+	var dv_type = $('#dv_type').val() || '';
+	
+	if (dv_type == '') {
+		return;
+	}
+	
+	var param = {'dv_type' : $('#dv_type').val() , 'ep_types' : [] };
+	var $sel_combo = $('#multiselect_to')
+	$sel_combo.find('option').each(function(idx){
+		param['ep_types'].push($(this).text());
+	});
+	return $.postJSON('/obm/devtype_map', param , function(d){
+		console.log(d);
+	});
+}
+
+
+
+
+</script>
+
+{% endblock %}
+<!-- SCRIPTS -->
+
+<!-- title -->
+{% block title %}{{title|safe}}{% endblock %}
+
+<!-- header -->
+{% block page_header %}
+{{ render_breadscrumb(title=title,sub_1="디바이스관리",sub_2="디바이스관리") }}
+{% endblock %}
+
+<!-- main block -->
+{% block page_main %}
+{{super()}}
+<!-- BEGIN-MAIN -->
+
+
+<div class="row">
+	<div class="col-lg-12">
+		<div class="tabs-container">
+			<ul class="nav nav-tabs">
+			<!-- TAB1 -->			
+				<li id='tab1' class="active"><a data-toggle="tab" href="#tab-1"
+					aria-expanded="true"> <i class="fa fa-list" aria-hidden="true"></i>
+						디바이스목록
+				</a></li>
+				<li id='tab2' class=""><a data-toggle="tab" href="#tab-2"
+					aria-expanded="false"> <i class="fa fa-microchip"
+						aria-hidden="true"></i> 디바이스추가
+				</a></li>
+				<li id='tab3' class=""><a data-toggle="tab" href="#tab-3"
+					aria-expanded="false"> <i class="fa fa-thermometer-half"
+						aria-hidden="true"></i> 엔드포인트 설정
+				</a></li>
+			</ul>
+			<div class="tab-content">
+				<div id="tab-1" class="tab-pane active">
+					<div class="panel-body">
+						1page
+					</div>
+				</div>
+			<!-- TAB1 -->
+			<!-- TAB2 -->
+			<div id="tab-2" class="tab-pane">
+				<div class="panel-body">
+						<!-- Table -->
+						<div class="col-lg-12">
+						<p class="m-sm"></p>
+						{% call render_form_noSubmit(form, form_id='form_id') %}
+							<div class="col-md-4">{{ render_field(form.dev_name) }}</div>
+							<div class="col-md-4">{{ render_field(form.dev_type) }}</div>
+							<div class="col-md-4">{{ render_field(form.dev_inst) }}</div>
+							<div class="col-md-12">{{ render_field(form.dev_info) }}</div>
+						{% endcall %}
+						<div class="col-md-12">
+							<div class="text-right">
+								<button id="form_save" class='btn btn-success'>저장</button>
+								<hr class="hr-line-dashed">
+							</div>
+						</div>
+						<!-- Table -->
+						<H4><ol class="breadcrumb">
+							<li><i class="fa fa-thermometer-half" aria-hidden="true"></i> <a>[ <font color="red"><span id="id_dev_type"></span></font> ] 디바이스</a></li>
+							<li class="active"><a>엔드포인트 타입</a></li>
+							</ol>
+						</h4>
+		
+						{{ show_eptype_table_readonly() }}
+						</div>
+						<!-- Table -->
+																
+				
+				</div>
+			</div>
+			<!-- TAB2 -->
+			<!-- TAB3 -->
+			<div id="tab-3" class="tab-pane">
+				<div class="panel-body">3</div>
+			</div>
+			<!-- TAB3 -->
+			</div>
+		</div>
+	</div>
+	<!-- MARGIN -->
+	<div class="col-lg-12 m-xs">
+	</div>
+	<!-- MARGIN -->
+	
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- END-MAIN -->
+
+{% endblock page_main %}
+
+

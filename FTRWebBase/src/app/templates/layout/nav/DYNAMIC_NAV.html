@@ -1,0 +1,24 @@
+{% from "macro/mc_menu.html" import render_menu %}
+
+<nav class="navbar-default navbar-static-side" role="navigation">
+	<div class="sidebar-collapse">
+		<ul class="nav metismenu" id="side-menu">
+			<!-- USER PROFILE -->
+			<li class="nav-header">
+				<div class="dropdown profile-element"> 
+				<!-- 
+					<span><img alt="image" class="img-circle" src="img/build2.png" width="48px" height="48px" /></span>
+				 -->
+					<span><img alt="image" class="img-circle" src="/img/profile_small.jpg" width="48px" height="48px" /></span>
+					<span class="clear"> <span class="block m-t-xs"> <strong class="font-bold">{{username}}</strong>
+					</span> <span class="text-muted text-xs block">Administrator</span> </span> 
+				</div>
+				<div class="logo-element">FTR</div>
+			</li>
+			<!-- end USER PROFILE -->
+			{{ render_menu(session['tree']) }}
+		</ul>
+	</div>
+</nav> 
+
+{% include "layout/nav/top_nav.html" %}

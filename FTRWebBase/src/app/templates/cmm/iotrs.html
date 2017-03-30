@@ -1,0 +1,116 @@
+<!-- extend base layout -->
+{% extends "base.html" %}
+{% block _style %}
+{{super()}}
+<style>
+ul {
+	list-style:none
+}
+</style>
+{% endblock %}
+{% block content %}
+{{super()}}
+<div id="root" class="container"></div>
+
+<script type="text/babel">
+
+var Node = function (name) {
+	  function s4() {
+		return Math.floor((1 + Math.random()) * 0x10000)
+		  .toString(16)
+		  .substring(1);
+	  }
+	function epid() {
+		return (s4() + s4() + s4() + s4() + s4() + s4() + s4() + s4());
+	}
+	this.children = [];
+	this.name = name;
+	this.id = epid();
+	this.style = 'none';
+	this.url = '#';
+}
+
+Node.prototype = {
+	add: function (child) {
+		this.children.push(child);
+	},
+	remove: function (child) {
+		var length = this.children.length;
+		for (var i = 0; i < length; i++) {
+			if (this.children[i] === child) {
+				this.children.splice(i, 1);
+				return;
+			}
+		}
+	},
+	getChild: function (i) {
+		return this.children[i];
+	},
+	hasChildren: function () {
+		return this.children.length > 0;
+	}
+}
+ 
+var s1 = new Node("습도센서");
+var s2 = new Node("온도센서");
+var s3 = new Node("광센서");
+
+var resource = new Node("버섯농장");
+var gw1 = new Node("GW#1");
+var gw2 = new Node("GW#2");
+var dev1 = new Node("Dev1");
+var dev2 = new Node("Dev2");
+var dev3 = new Node("Dev3");
+
+dev1.add(s3);
+dev2.add(s1);
+dev2.add(s1);
+dev2.add(s1);
+dev2.add(s2);
+dev2.add(s3);
+dev3.add(s1);
+dev3.add(s3);
+
+gw1.add(dev1);
+gw2.add(dev2);
+gw2.add(dev3);
+
+resource.add(gw1);
+resource.add(gw2);
+
+class NodeView extends React.Component {
+	constructor(props) {
+		super(props);
+	}
+	render() {
+		let items;
+		if(this.props.data.hasChildren()) {
+			let cItems = this.props.data.children.map( 
+				(child) => ( <NodeView key={child.id} data={child} /> )
+			);
+			items = ( 
+					<li key={this.props.data.id}>
+						<a href={this.props.data.url}><strong>{this.props.data.name}</strong></a>
+						<ul>
+							{cItems}
+						</ul>
+					</li> 
+			);
+			console.log(this.props.data.id);
+		} else {
+			items = ( 
+				<li key={this.props.data.id}>
+					<a href={this.props.data.url}>{this.props.data.name}</a>
+				</li> 
+			);
+		}
+		return (<ul>{items}</ul>);
+	}
+}
+
+ReactDOM.render(<NodeView data={resource} />, document.getElementById('root'));
+
+</script>
+
+<div class="container"></div>	
+{% endblock %}

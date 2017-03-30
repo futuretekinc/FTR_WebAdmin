@@ -1,0 +1,57 @@
+{% macro css_html_table() -%}
+
+	<!-- DataTable -->
+    <link href="{{url_for('static',filename='css/plugins/dataTables/datatables.min.css')}}" rel="stylesheet">
+
+    <!-- FooTable -->
+    <link href="{{url_for('static',filename='css/plugins/footable/footable.core.css')}}" rel="stylesheet">
+    
+    <!-- Sweet Alert -->
+    <link href="{{url_for('static',filename='css/plugins/sweetalert/sweetalert.css')}}" rel="stylesheet">
+
+	<!-- jqGrid -->
+	<link href="{{url_for('static',filename='css/plugins/jQueryUI/jquery-ui-1.10.4.custom.min.css')}}" rel="stylesheet">
+	<link href="{{url_for('static',filename='css/plugins/jqGrid/ui.jqgrid.css')}}" rel="stylesheet">
+	
+	
+     <style>
+        /* Additional style to fix warning dialog position*/ 
+       #alertmod_table_list_2 {
+            top: 900px !important;
+        }
+        .jqgrid_div {
+        	margin:0;
+        	width:99%;
+        }
+    </style>
+{%- endmacro %}
+
+{% macro js_html_table() -%}
+    <!-- DataTables -->
+    <script src="{{url_for('static',filename='js/plugins/dataTables/datatables.min.js')}}"></script>
+	
+	<!-- FooTable -->
+    <script src="{{url_for('static',filename='js/plugins/footable/footable.all.min.js')}}"></script>
+    
+    <!-- Sweet alert -->
+    <script src="{{url_for('static',filename='js/plugins/sweetalert/sweetalert.min.js')}}"></script>
+    
+    <!-- bootbox -->
+    <script src="{{url_for('static',filename='assets/js/bootbox/bootbox.min.js')}}"></script>
+    
+    <!-- bootbox-util -->
+    <script src="{{url_for('static',filename='assets/js/admin/ftr_alert.js')}}"></script>
+    <script src="{{url_for('static',filename='assets/js/admin/ftr_extend.js')}}"></script> 
+        
+    <!-- Peity -->
+    <script src="{{url_for('static',filename='js/plugins/peity/jquery.peity.min.js')}}"></script>
+
+    <!-- jqGrid -->
+    <script src="{{url_for('static',filename='js/plugins/jqGrid/i18n/grid.locale-en.js')}}"></script>
+    <script src="{{url_for('static',filename='js/plugins/jqGrid/jquery.jqGrid.min.js')}}"></script>
+
+    <!-- underscore -->
+    <script src="{{url_for('static',filename='js/react/underscore-min.js')}}"></script>
+
+{%- endmacro %}
+

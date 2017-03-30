@@ -1,0 +1,319 @@
+{% extends "layout/main.html" %}
+{% from "macro/mc_form.html" import render_field, render_form,render_form_noSubmit, render_checkbox_field %}
+{% from "macro/mc_header.html" import css_html_table,js_html_table %}
+{% from "macro/mc_components.html" import render_multiselect %}
+{% from "obm/obm_tables.html" import show_dvtype_table,foo_table %}
+
+<!-- CSS -->
+{% block styles %}
+{{super()}}
+{{css_html_table()}}
+<style>
+.no-border {
+	border:0;
+	box-shadow:none; 
+}
+</style>
+{% endblock %}
+<!-- CSS -->
+
+<!-- SCRIPTS -->
+{% block scripts %}
+{{super()}}
+{{js_html_table()}}  
+<script src="{{url_for('static',filename='assets/js/multiselect/multiselect.js')}}"></script>
+<script src="{{url_for('static',filename='assets/js/obm/obm_tables.js')}}"></script>
+  
+<script type="text/javascript">
+
+function fn_isActiveTab1() {
+	if(false == $('#tab-1').hasClass('active')) {
+		bootbox.alert("엔드포인트 설정 화면에서는 삭제 할 수 없습니다.");
+		return false;
+	}
+	return true;
+}
+
+function fn_onDelete(dvtype) {
+	if ($('#tab-1').hasClass('active')) {
+		var $form = $('<form></form>');
+		$form.attr({'action' : '/obm/devtype_delete'});
+		$form.attr({'method' : 'post'});
+		$form.appendTo(document.body);
+		
+		var input_dvType = $('<input type="hidden" name="dv_type" value="'+dvtype+'"/>')
+		$form.append(input_dvType);
+		$form.submit();
+	}
+}
+ 
+function fn_onNew() {
+	location.href='/obm/devtype'
+}
+
+function fn_onSave() {
+	var $form = $('#form_id');
+	$form.attr({'action' : '/obm/devtype_save'});
+	$form.attr({'method' : 'POST'});
+	$form.submit();
+}
+
+function fn_onUpdate() {
+	var $form = $('#form_id');
+	$form.attr({'action' : '/obm/devtype_update'});
+	$form.attr({'method' : 'POST'});
+	$form.submit();
+}
+
+/**
+ * 디바이스에 속해 있는 모든 엔드포인트 리스트를 가져온다.
+ multiselect
+ multiselect_to
+ */
+function fn_loadEntryForDevice(dv_type) {
+	var param = {'dv_type' : dv_type }
+	return $.getJSON('/obm/devtype_map', param , function(d){
+		console.log(d);
+		var sel = d['selected'];
+		var unsel = d['unselected'];
+		var $unsel_combo = $('#multiselect')
+		var $sel_combo = $('#multiselect_to')
+		//console.log(sel);
+		$sel_combo.html('');
+		$unsel_combo.html('');
+		
+		for(var i = 0; i < sel.length; i++) {
+			$sel_combo.append('<option>'+sel[i]+'</option>');
+		}
+
+		for(var i = 0; i < unsel.length; i++) {
+			$unsel_combo.append('<option>'+unsel[i]+'</option>');
+		}
+	})
+}
+
+
+function fn_updateEntryForDevice(e) {
+	
+	e.preventDefault();
+	
+	var dv_type = $('#dv_type').val() || '';
+	
+	if (dv_type == '') {
+		return;
+	}
+	
+	var param = {'dv_type' : $('#dv_type').val() , 'ep_types' : [] };
+	var $sel_combo = $('#multiselect_to')
+	$sel_combo.find('option').each(function(idx){
+		param['ep_types'].push($(this).text());
+	});
+	$.postJSON('/obm/devtype_map', param , function(d){
+		//console.log(d);
+	}).done(function(d){
+		bootbox.alert("디바이스["+dv_type+"] 엔드포인트 목록이 갱신(저장)되었습니다.");	
+	});
+}
+
+
+
+$(document).ready(function(){
+	$.openMenu('M2_13_30');
+	show_dvtype_table();
+	
+	$('#ep_map_update').on('click',fn_updateEntryForDevice);
+	
+	
+	$(document).on('click','.ftr_table_delete',function(e){
+		e.preventDefault();
+		
+		if(false == fn_isActiveTab1()) {
+			return;
+		}
+		
+		var key = $(this).attr('key');
+		ftr_alert_confirm_normal("엔트리 타입 ["+key+"]를 삭제 하시겠습니까?", function(result) {
+			if(false == result) {
+				//
+				return;
+			}
+			fn_onDelete(key);
+		});
+	});
+	
+	$('#form_new').click(fn_onNew);
+	$('#form_save').click(fn_onSave);
+	$('#form_update').click(fn_onUpdate);
+	
+	$(document).on('click','.table_view tr',function(e){
+		e.preventDefault();
+		
+		var $this = $(this);
+		function _text(obj, index) {
+			return $(obj).find('td:eq('+index+')').text();
+		}
+		
+		var dv_type = _text($this,0);
+		var load = fn_loadEntryForDevice(dv_type); // 자식 엔트리 목록 업데이트 
+		load.done(function(d){
+			var names = [ 'dv_type' ,'dv_name' ,'dv_desc' 
+				, 'dv_location' , 'dv_timeout' ,'dv_option' ,'dv_snmp' ];
+			
+			for(var i = 0; i < names.length; i++) {
+				$('#form_id [name='+names[i]+']').val(_text($this,i));
+				$('#info_id [name='+names[i]+']').val(_text($this,i));
+			}
+		});
+   });
+	
+	/** http://www.jqueryscript.net/form/Two-side-Multi-Select-Plugin-with-jQuery-multiselect-js.html */
+	$('#multiselect').multiselect();
+	
+	$('#tab2').on('click',function(e){
+		e.preventDefault();
+		$('.table_view tr:eq(0) td:eq(1)').trigger('click');
+		console.log('tab2--')
+	});
+});
+
+</script>
+
+{% endblock %}
+<!-- SCRIPTS -->
+
+<!-- title -->
+{% block title %}{{title|safe}}{% endblock %}
+
+<!-- header -->
+{% block page_header %}
+{{ render_breadscrumb(title=title,sub_1="디바이스관리",sub_2="디바이스타입관리") }}
+{% endblock %}
+
+<!-- main block -->
+{% block page_main %}
+{{super()}}
+<!-- BEGIN-MAIN -->
+<div class="row">
+<div class="col-lg-12">
+
+
+<div class="tabs-container">
+	<ul class="nav nav-tabs">
+		<li id='tab1' class="active"><a data-toggle="tab" href="#tab-1"
+			aria-expanded="true"><i class="fa fa-microchip" aria-hidden="true"></i> 디바이스타입 관리</a></li>
+		<li id='tab2' class=""><a data-toggle="tab" href="#tab-2"
+			aria-expanded="false"><i class="fa fa-thermometer-half" aria-hidden="true"></i> 엔드포인트 설정</a></li> 
+	</ul>
+	<div class="tab-content">
+		<!-- TAB1 -->
+		<div id="tab-1" class="tab-pane active">
+			<div class="panel-body">
+				<div class="row">
+				{% call render_form_noSubmit(form, form_id='form_id') %}
+					<div class="col-md-6">
+						<div class="col-xs-6">{{ render_field(form.dv_type) }}</div>
+						<div class="col-xs-6">{{ render_field(form.dv_name) }}</div>
+						<div class="col-xs-12">{{ render_field(form.dv_desc) }}</div>
+					</div>
+					<div class="col-md-6">
+						<div class="col-xs-6">{{ render_field(form.dv_location) }}</div>
+						<div class="col-xs-6">{{ render_field(form.dv_timeout) }}</div>
+						<div class="col-xs-6">{{ render_field(form.dv_option) }}</div>
+						<div class="col-xs-6">{{ render_field(form.dv_snmp) }}</div>
+					</div>
+				</div>
+				{% endcall %}
+			<div class="text-right">
+				<button id="form_new" class='btn btn-default'>신규</button>
+				<button id="form_update" class='btn btn-primary'>수정</button>
+				<button id="form_save" class='btn btn-success'>저장</button>
+			</div>				
+			</div>
+		</div>
+		<!-- TAB1 -->
+		<!-- TAB2 -->
+		<div id="tab-2" class="tab-pane">
+			<div class="panel-body">
+				<p>
+				<strong>디바이스 정보</strong>
+				<div class="col-md-8 border-right">
+					<!-- <strong>엔드포인트 설정</strong> -->
+					<p>{{ render_multiselect(epTypes) }}</p>
+					<div class="text-right">
+						<button id="ep_map_update" class='btn btn-primary'>저장</button> 
+					</div>						
+				</div>
+				<div class="col-md-4" id='info_id'>
+					<p>
+						<div class="col-xs-12">
+							<div class="form-group no-border ">
+            					<label for="dv_type" class="control-label"><label for="dv_type">타입</label></label>
+        						<input class="form-control input-sm" id="dv_type" name="dv_type" style="text-transform:uppercase;border:0" type="text" readonly> 
+							</div>
+						</div>
+						<div class="col-xs-12">
+							<div class="form-group no-border ">
+            					<label for="dv_type" class="control-label"><label for="dv_name">이름</label></label>
+        						<input class="form-control input-sm" id="dv_name" name="dv_name" style="border:0" type="text" readonly> 
+							</div>
+						</div>
+						<div class="col-xs-12">
+							<div class="form-group no-border ">
+            					<label for="dv_desc" class="control-label"><label for="dv_desc">설명</label></label>
+        						<textarea class="form-control input-sm" id="dv_desc" name="dv_desc" style="border:0" readonly></textarea> 
+    						</div>
+						</div>
+
+
+					</p>
+				</div>
+				</p>
+			</div>
+		</div>
+		<!-- TAB2 -->
+	</div>
+</div>
+
+<div class="col-lg-12 m-xs">
+
+</div>
+
+
+</div>
+<!-- TABLE -->
+<div class="col-lg-12">
+	<div class="ibox-content m-b-sm border-bottom">
+		{{ show_dvtype_table() }}
+	</div>
+</div>
+<!-- TABLE -->
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- END-MAIN -->
+
+{% endblock page_main %}
+
+
