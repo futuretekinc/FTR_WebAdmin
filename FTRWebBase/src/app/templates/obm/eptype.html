@@ -57,10 +57,12 @@ $(document).ready(function(){
 	$(document).on('click','.ftr_table_delete',function(){
 		var key = $(this).attr('key');
 		ftr_alert_confirm_normal("엔트리 타입 ["+key+"]를 삭제 하시겠습니까?", function(result) {
+			
 			if(false == result) {
 				/* false - nothing */
 				return;
 			}
+			
 			fn_onDelete(key);
 		});
 	});
@@ -75,7 +77,7 @@ $(document).ready(function(){
 			return $(obj).find('td:eq('+index+')').text();
 		}
 		var names = [
-			'ep_type' ,'ep_name'
+			'ep_type' ,'ep_name','ep_scale'
 			,'ep_unit' , 'ep_pr_host' , 'ep_interval' , 'ep_limit'
 			, 'ep_hour', 'ep_day', 'ep_month', 'ep_count'
 		];
@@ -121,6 +123,9 @@ $(document).ready(function(){
 				</div>
 				<div class="col-sm-2">
 				{{ render_field(form.ep_name) }}
+				</div>
+				<div class="col-sm-2">
+				{{ render_field(form.ep_scale) }}
 				</div>
 				<div class="col-sm-2">
 				{{ render_field(form.ep_unit) }}

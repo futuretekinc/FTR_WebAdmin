@@ -41,8 +41,9 @@ class OB_ENDPOINT_TYPE(db.Model):
     __tablename__ = "OB_ENDPOINT_TYPE"
     ep_type = db.Column(db.NVARCHAR(50),nullable=False,primary_key=True)
     ep_name = db.Column(db.NVARCHAR(50),nullable=False)
+    ep_scale = db.Column(db.Numeric(precision=15,scale=3,asdecimal=True),default=1.0)
+#     ep_scale = db.Column(db.NVARCHAR(15),default='1.0')
     ep_unit = db.Column(db.NVARCHAR(20),nullable=True)
-    '''ep_scale = db.Column(db.Float(precision=3,asdecimal=True))'''
     ep_pr_host = db.Column(db.NVARCHAR(60),nullable=False,default='127.0.0.1') # parent domain(connection info)
     ep_interval = db.Column(db.Integer,nullable=False,default=10)
     ep_limit = db.Column(db.NVARCHAR(10),nullable=False) # time  / count
@@ -59,7 +60,7 @@ class OB_DEVICE_TYPE(db.Model):
     dv_location = db.Column(db.NVARCHAR(100))
     dv_timeout = db.Column(db.Integer,nullable=False,default=10)
     dv_option = db.Column(db.NVARCHAR(200))
-    dv_snmp = db.Column(db.NVARCHAR(100))
+    dv_protocol = db.Column(db.NVARCHAR(100))
 
 class OB_DEVICE_TYPE_MAP(db.Model):
     __tablename__ = "OB_DEVICE_TYPE_MAP"

@@ -65,6 +65,7 @@ function show_eptype_table() {
 	var columns = [
 		{'data' : 'ep_type'} ,
 		{'data' : 'ep_name'} ,
+		{'data' : 'ep_scale'} ,
 		{'data' : 'ep_unit'} ,
 		{'data' : 'ep_pr_host'} ,
 		{'data' : 'ep_interval'} ,
@@ -86,6 +87,7 @@ function show_eptype_table_readonly() {
 	var columns = [
 		{'data' : 'ep_type'} ,
 		{'data' : 'ep_name'} ,
+		{'data' : 'ep_scale'} ,
 		{'data' : 'ep_unit'} ,
 		{'data' : 'ep_pr_host'} ,
 		{'data' : 'ep_interval'} ,
@@ -93,7 +95,7 @@ function show_eptype_table_readonly() {
 		{'data' : 'ep_hour'} ,
 		{'data' : 'ep_day'} ,
 		{'data' : 'ep_month'} ,
-		{'data' : 'ep_count'} ,
+		{'data' : 'ep_count'} , 
 	];
 //	console.log(table_id)
 	render_datatable(table_id, url, columns);   	
@@ -112,7 +114,7 @@ function show_dvtype_table() {
 		{'data' : 'dv_location'} ,
 		{'data' : 'dv_timeout'} ,
 		{'data' : 'dv_option'} ,
-		{'data' : 'dv_snmp'} ,
+		{'data' : 'dv_protocol'} ,
 		{'data' : 'dv_delete' }
 	];
 //	console.log(table_id)

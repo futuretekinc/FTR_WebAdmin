@@ -20,5 +20,6 @@ __all__ = [
             , 'ob_eptype_many'
             , 'ob_dvtype_many'
             , 'ob_device_type_map_many'
+            , 'ob_devtype_single'
         ]
 

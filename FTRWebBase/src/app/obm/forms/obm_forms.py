@@ -32,7 +32,7 @@ class OB_DEVTYPE_FORM(Form):
     dv_location = StringField(u'위치정보', [validators.Length(min=1,max=100)],render_kw={'placeholder' : u'위치정보'})
     dv_timeout = IntegerField(u'타임아웃',[validators.required()],render_kw={'type' : 'number','value' : 0 })
     dv_option = StringField(u'옵션', [validators.Length(min=1,max=200)],render_kw={'placeholder' : u'옵션'})
-    dv_snmp = StringField(u'SNMP')
+    dv_protocol = StringField(u'프로토콜')
     def __init__(self,*args,**kwargs):
         Form.__init__(self,*args,**kwargs)
         self.dvtype = None
@@ -54,14 +54,10 @@ class OB_DEVTYPE_FORM(Form):
 class OB_EPTYPE_FORM(Form):
     ep_type = StringField(u'타입', [validators.required(),validators.Length(min=1,max=50)],render_kw={'style' : "text-transform:uppercase", 'placeholder' : 'required'})
     ep_name = StringField(u'이름', [validators.required(),validators.Length(min=1,max=50)],render_kw={'placeholder' : 'unit'})
+    ep_scale = StringField(u'스케일', [validators.required()],render_kw={'type' : 'number','value' : '1.0','step' : "0.001" })
     ep_unit = StringField(u'단위', [validators.Length(min=1,max=50)],render_kw={'placeholder' : 'required'}) # validators.required(),
     ep_pr_host = StringField(u'호스트 정보', [validators.required(),validators.Length(min=1,max=50)],default='127.0.0.1')
-    ep_interval = SelectField(u'이벤트 주기', choices=[ ('10', '10초') 
-                                                  , ('20', '20초') 
-                                                  , ('30', '30초') 
-                                                  , ('40', '40초')
-                                                  , ('50', '50초') 
-                                                  , ('60', '60초') ])
+    ep_interval = IntegerField(u'실행주기(초)', [validators.NumberRange(min=0, max=100000)],render_kw={'type' : 'number','value' : 0 })
     ep_limit = SelectField(u'이벤트 설정  형태', choices=[ ('time', '시간(time)') , ( 'count', '횟수(count)' )])
     ep_hour = IntegerField(u'시간', [validators.NumberRange(min=0, max=24)],render_kw={'type' : 'number','value' : 0 })
     ep_day = IntegerField(label=u'일', validators=[validators.NumberRange(min=0, max=31)],render_kw={'type' : 'number','value' : 0 })

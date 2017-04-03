@@ -38,5 +38,6 @@ ob_device_many           = SCH_OB_DEVICE(many=True)
 ob_endpoint_many         = SCH_OB_ENDPOINT(many=True)
 ob_eptype_many           = SCH_OB_EPTYPE(many=True)
 ob_dvtype_many           = SCH_OB_DEVTYPE(many=True)
+ob_devtype_single        = SCH_OB_DEVTYPE(many=False)
 ob_device_type_map_many  = SCH_OB_DEVICE_TYPE_MAP(many=True)
 

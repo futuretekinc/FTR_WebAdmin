@@ -5,6 +5,7 @@ from app import db,ma
 
 from datetime import datetime
 from app.cmm.utils import uuid_gen 
+from sqlalchemy.sql.expression import text
  
 # Define a base model for other database tables to inherit
 class Base(db.Model):
@@ -82,20 +83,22 @@ class CM_CODEM(db.Model):
     re3f_desc = db.Column(db.NVARCHAR(100))
     re4f_desc = db.Column(db.NVARCHAR(100))
     inst_usid = db.Column(db.NVARCHAR(30),default="ADMIN",nullable=False)
-    inst_date = db.Column(db.DATE,nullable=False,default=db.func.current_timestamp())
+    inst_date = db.Column(db.DATETIME,default=db.func.current_timestamp())
     updt_usid = db.Column(db.NVARCHAR(30),default="ADMIN",nullable=False)
-    updt_date = db.Column(db.DATE,nullable=False,default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
-    tm_coded      = db.relationship('CM_CODED', backref="CM_CODEM")
-    
+    updt_date = db.Column(db.DATETIME,nullable=False,default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
+#     tm_coded      = db.relationship('CM_CODED', backref="CM_CODEM")
+'''    
 class CM_CODEM_SCH(ma.Schema):
     class Meta:
         fields = ('comm_code','comm_cdnm','inst_usid','inst_date')
 
 codem_many = CM_CODEM_SCH(many=True)
+'''
+
 
 class CM_CODED(db.Model):
     __tablename__ = "CM_CODED"
-    comm_code = db.Column(db.NVARCHAR(50), db.ForeignKey('CM_CODEM.comm_code'),primary_key=True)
+    comm_code = db.Column(db.NVARCHAR(50), primary_key=True)
     comd_code = db.Column(db.NVARCHAR(50), primary_key=True, nullable=False)
     comd_cdnm = db.Column(db.NVARCHAR(200),nullable=False)
     use_yn = db.Column(db.NVARCHAR(1),nullable=False,default='Y')
@@ -103,10 +106,10 @@ class CM_CODED(db.Model):
     ref2_fild = db.Column(db.NVARCHAR(100))
     ref3_fild = db.Column(db.NVARCHAR(100))
     ref4_fild = db.Column(db.NVARCHAR(100))
-    sort_ordr = db.Column(db.INTEGER)
+    sort_ordr = db.Column(db.Integer)
     inst_usid = db.Column(db.NVARCHAR(30),default="ADMIN",nullable=False)
-    inst_date = db.Column(db.DATE,nullable=False,default=db.func.current_timestamp())
+    inst_date = db.Column(db.DATETIME,default=db.func.current_timestamp(type_=db.Time))
     updt_usid = db.Column(db.NVARCHAR(30),default="ADMIN",nullable=False)
-    updt_date = db.Column(db.DATE,nullable=False,default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
+    updt_date = db.Column(db.DATETIME,nullable=False,default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
 
 

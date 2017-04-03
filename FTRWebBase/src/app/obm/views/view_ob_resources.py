@@ -1,3 +1,5 @@
+import decimal
+import json
 from flask import render_template, jsonify, g, abort,session,request,redirect,flash
 from flask.views import View, MethodView
 
@@ -5,6 +7,11 @@ from app import db, ma
 from app.obm.models import *
 from app.obm.forms import * 
 from sqlalchemy.orm import joinedload
+
+def decimal_default(obj):
+    if isinstance(obj,decimal.Decimal):
+        return str(float(obj))
+    raise TypeError
 
 class OB_RESOURCE_VIEW(MethodView):
     def get(self):
@@ -95,7 +102,7 @@ class OB_DEVTYPE_SAVE(View):
             dtype.dv_location = str(form.dv_location.data)
             dtype.dv_timeout = str(form.dv_timeout.data)
             dtype.dv_option = str(form.dv_option.data)
-            dtype.dv_snmp = str(form.dv_snmp.data)
+            dtype.dv_protocol = str(form.dv_protocol.data)
             db.session.add(dtype)
             db.session.commit()
             return redirect('/obm/devtype')  
@@ -125,7 +132,7 @@ class OB_DEVTYPE_UPDATE(View):
                 dtype.dv_location = str(form.dv_location.data)
                 dtype.dv_timeout = str(form.dv_timeout.data)
                 dtype.dv_option = str(form.dv_option.data)
-                dtype.dv_snmp = str(form.dv_snmp.data)
+                dtype.dv_protocol = str(form.dv_protocol.data)
                 db.session.commit()
                 return redirect('/obm/devtype')  
         return render_template('obm/devtype.html',form=form) 
@@ -139,6 +146,7 @@ SELECT
 FROM 
     OB_ENDPOINT_TYPE a 
     LEFT OUTER JOIN OB_DEVICE_TYPE_MAP b 
+    
     ON a.ep_type = b.ep_type AND b.dv_type=:dv_type    
     '''
     def get(self):
@@ -148,6 +156,10 @@ FROM
         selected = []
         unselected = []
         buf = []
+        try:
+            bufType = db.session.query(OB_DEVICE_TYPE).filter(OB_DEVICE_TYPE.dv_type == dv_type).one()
+        except Exception as e:
+            bufType = None
         for (x,y) in r:
             if y.dv_type is None:
                 unselected.append(x.ep_type)
@@ -156,8 +168,13 @@ FROM
                 buf.append(x)
         
         eptypes = ob_eptype_many.dump(buf)
-        result = { 'dv_type' : dv_type, 'selected' : selected , 'unselected' : unselected,'eptypes' : eptypes.data }
-        return jsonify(result)
+        if bufType:
+            dvtype = ob_devtype_single.dump(bufType).data 
+        else:
+            dvtype = {}
+        result = { 'dv_type' : dvtype, 'selected' : selected , 'unselected' : unselected,'eptypes' : eptypes.data }
+        return json.dumps(result,default=decimal_default)
+#         return jsonify(result)
 
     def post(self):
         dv_type = request.values.get('dv_type','',type=str)
@@ -176,33 +193,6 @@ FROM
             db.session.rollback()
         return jsonify({'result' :  ep_types })
     
-
-if __name__ == '__main_x_':
-    loadEntryQuery = '''
-SELECT 
-        a.ep_name, a.ep_type,a.ep_unit, b.dv_type 
-FROM 
-    ob_endpoint_type a 
-    LEFT OUTER JOIN ob_device_type_map b 
-    ON a.ep_type = b.ep_type AND b.dv_type=:dv_type    
-    '''   
-    r = db.session.query(OB_ENDPOINT_TYPE, OB_DEVICE_TYPE_MAP)
-    r = r.from_statement(loadEntryQuery).params({'dv_type': 'FTM300'}).all()
-    selected = []
-    unselected = []
-    for (x,y) in r:
-#         print(y.ep_type,' -- ',y.dv_type)
-        if y.dv_type is None:
-            unselected.append(x.ep_type)
-        else:
-            selected.append(x.ep_type)
-
-    result = { 'selected' : selected , 'unselected' : unselected }
-     
-    print(result)
-
-
-
 
 
 class OB_ENDPOINT_VIEW(MethodView):
@@ -224,7 +214,8 @@ class OB_EPTYPE_VIEW(MethodView):
         result = ob_eptype_many.dump(eptypes)
         for row in result.data:
             row['delete'] = '<span class="ftr_table_delete" key="{ep_type}"><i class="fa fa-trash-o"></i></span>'.format(ep_type=row.get('ep_type'))
-        return jsonify({ 'data' : result.data }) 
+        return json.dumps({ 'data' : result.data },default=decimal_default)
+#         return jsonify({ 'data' : result.data }) 
     
 class OB_EPTYPE_SAVE(View):
     methods = ['POST']
@@ -234,6 +225,7 @@ class OB_EPTYPE_SAVE(View):
             etype = OB_ENDPOINT_TYPE()
             etype.ep_type = str(form.ep_type.data).upper()
             etype.ep_name = str(form.ep_name.data)
+            etype.ep_scale = str(form.ep_scale.data)
             etype.ep_unit = str(form.ep_unit.data) if form.ep_unit.data is not None else ''
             etype.ep_pr_host = str(form.ep_pr_host.data)
             etype.ep_interval = str(form.ep_interval.data)
@@ -267,6 +259,7 @@ class OB_EPTYPE_UPDATE(View):
             etype = db.session.query(OB_ENDPOINT_TYPE).filter(OB_ENDPOINT_TYPE.ep_type == ep_type).first()
             if etype is not None:
                 etype.ep_name = str(form.ep_name.data)
+                etype.ep_scale = str(form.ep_scale.data)
                 etype.ep_unit = str(form.ep_unit.data) if form.ep_unit.data is not None else ''
                 etype.ep_pr_host = str(form.ep_pr_host.data)
                 etype.ep_interval = str(form.ep_interval.data)
