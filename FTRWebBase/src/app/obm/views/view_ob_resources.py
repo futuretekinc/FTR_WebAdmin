@@ -137,8 +137,8 @@ class OB_DEVTYPE_MAP_VIEW(MethodView):
 SELECT 
         a.ep_name, a.ep_type,a.ep_unit, b.dv_type 
 FROM 
-    ob_endpoint_type a 
-    LEFT OUTER JOIN ob_device_type_map b 
+    OB_ENDPOINT_TYPE a 
+    LEFT OUTER JOIN OB_DEVICE_TYPE_MAP b 
     ON a.ep_type = b.ep_type AND b.dv_type=:dv_type    
     '''
     def get(self):
