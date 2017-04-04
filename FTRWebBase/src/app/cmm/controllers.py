@@ -36,6 +36,7 @@ def editcode():
     for x in rs:
         code['result'].append({'comm_code':x.comm_code, 'comm_cdnm' : x.comm_cdnm })
     return render_template('cmm/editcode.html',mform=mform,dform=dform,mcode=code, title='시스템코드등록',username='FutureTeK')    
+
 @cmm.route('/master_code',methods=['GET','POST'])
 def masterCode():
     form = MasterCDForm(request.form)

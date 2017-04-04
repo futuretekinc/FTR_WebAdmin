@@ -5,6 +5,7 @@ from flask_wtf import Form
 from wtforms import BooleanField, StringField, PasswordField, validators, IntegerField,SelectField,TextAreaField,DateField
 from wtforms.validators import DataRequired, Required
 from app.obm.models.ob_resources import OB_ENDPOINT_TYPE,OB_DEVICE_TYPE
+from app.cmm.models import CM_CODED
 
 class OB_RESOURCE_FORM(Form):
     res_name = StringField(u'자원 명', [validators.required(),validators.Length(min=1,max=50)])
@@ -31,12 +32,23 @@ class OB_DEVTYPE_FORM(Form):
     dv_desc = TextAreaField(u'설명', [validators.required(),validators.Length(min=1,max=300)],render_kw={'placeholder' : u'디바이스 설명'})
     dv_location = StringField(u'위치정보', [validators.Length(min=1,max=100)],render_kw={'placeholder' : u'위치정보'})
     dv_timeout = IntegerField(u'타임아웃',[validators.required()],render_kw={'type' : 'number','value' : 0 })
-    dv_option = StringField(u'옵션', [validators.Length(min=1,max=200)],render_kw={'placeholder' : u'옵션'})
-    dv_protocol = SelectField(u'프로토콜', choices=[ ('-', '-' )])
+    #dv_option = StringField(u'옵션', [validators.Length(min=1,max=200)],render_kw={'placeholder' : u'옵션'})
+    dv_protocol = SelectField(u'프로토콜', choices=[ ('-', '-' )],validators=[validators.optional()])
     
     def __init__(self,*args,**kwargs):
         Form.__init__(self,*args,**kwargs)
         self.dvtype = None
+        self.dv_protocol.choices = self.protocol_choice()
+
+    def protocol_choice(self):
+        comm_code = 'DEV_PROTOCOL'
+        rows = db.session.query(CM_CODED) \
+                        .filter(CM_CODED.comm_code == comm_code
+                                , CM_CODED.use_yn == 'Y' ).all()
+        buf = []
+        for x in rows:
+            buf.append((x.comd_code, x.comd_code))
+        return buf
 
     def validate(self):
         rv = Form.validate(self)

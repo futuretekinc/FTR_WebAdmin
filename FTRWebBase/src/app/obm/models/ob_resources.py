@@ -59,7 +59,6 @@ class OB_DEVICE_TYPE(db.Model):
     dv_desc = db.Column(db.NVARCHAR(300))
     dv_location = db.Column(db.NVARCHAR(100))
     dv_timeout = db.Column(db.Integer,nullable=False,default=10)
-    dv_option = db.Column(db.NVARCHAR(200))
     dv_protocol = db.Column(db.NVARCHAR(100))
 
 class OB_DEVICE_TYPE_MAP(db.Model):

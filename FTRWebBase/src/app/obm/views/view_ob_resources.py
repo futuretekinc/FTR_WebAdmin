@@ -101,7 +101,7 @@ class OB_DEVTYPE_SAVE(View):
             dtype.dv_desc = str(form.dv_desc.data)
             dtype.dv_location = str(form.dv_location.data)
             dtype.dv_timeout = str(form.dv_timeout.data)
-            dtype.dv_option = str(form.dv_option.data)
+#             dtype.dv_option = str(form.dv_option.data)
             dtype.dv_protocol = str(form.dv_protocol.data)
             db.session.add(dtype)
             db.session.commit()
@@ -125,13 +125,12 @@ class OB_DEVTYPE_UPDATE(View):
         form = OB_DEVTYPE_FORM(request.form)
         if form.updateValidate():
             dv_type = str(form.dv_type.data)
-            dtype = db.session.query(OB_DEVICE_TYPE).filter(OB_DEVICE_TYPE.ep_type == dv_type).first()
+            dtype = db.session.query(OB_DEVICE_TYPE).filter(OB_DEVICE_TYPE.dv_type == dv_type).first()
             if dtype is not None:
                 dtype.dv_name = str(form.dv_name.data)
                 dtype.dv_desc = str(form.dv_desc.data)
                 dtype.dv_location = str(form.dv_location.data)
                 dtype.dv_timeout = str(form.dv_timeout.data)
-                dtype.dv_option = str(form.dv_option.data)
                 dtype.dv_protocol = str(form.dv_protocol.data)
                 db.session.commit()
                 return redirect('/obm/devtype')  

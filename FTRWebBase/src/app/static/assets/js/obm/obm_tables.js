@@ -110,10 +110,8 @@ function show_dvtype_table() {
 	var columns = [
 		{'data' : 'dv_type'} ,
 		{'data' : 'dv_name'} ,
-		//{'data' : 'dv_desc'} ,
 		{'data' : 'dv_location'} ,
 		{'data' : 'dv_timeout'} ,
-		{'data' : 'dv_option'} ,
 		{'data' : 'dv_protocol'} ,
 		{'data' : 'dv_delete' }
 	];
