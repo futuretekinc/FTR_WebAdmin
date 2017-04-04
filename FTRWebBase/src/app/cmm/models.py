@@ -96,6 +96,7 @@ codem_many = CM_CODEM_SCH(many=True)
 '''
 
 
+
 class CM_CODED(db.Model):
     __tablename__ = "CM_CODED"
     comm_code = db.Column(db.NVARCHAR(50), primary_key=True)

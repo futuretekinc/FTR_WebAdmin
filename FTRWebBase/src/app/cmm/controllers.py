@@ -7,6 +7,7 @@ from app.cmm.views.cmUserView import CM_USER_VIEW, CM_MENU_ITEM_VIEW,\
     CM_USER_ROLE_VIEW
 from app.cmm.forms import MasterCDForm, DetailCDForm
 from app.cmm.models import CM_CODEM, CM_CODED
+from app.cmm.views.cmCodeView import CM_FIND_COMM_VIEW
 
 
 cmm = Blueprint('cmm', __name__, url_prefix='/cmm')
@@ -21,6 +22,9 @@ cmm.add_url_rule('/coded',view_func=cmCodeView)
 cmm.add_url_rule('/users', view_func=userView)
 cmm.add_url_rule('/user_role', view_func=userRoleView)
 cmm.add_url_rule('/menus',view_func=CM_MENU_ITEM_VIEW().as_view('menu_view'))
+
+
+cmm.add_url_rule('/find_code',view_func=CM_FIND_COMM_VIEW().as_view('cm_find_comm_view'))
 
 @cmm.route('/editcode',methods=['GET','POST'])
 def editcode():

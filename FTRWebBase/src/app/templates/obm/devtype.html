@@ -116,11 +116,27 @@ function fn_updateEntryForDevice(e) {
 }
 
 
+function fn_loadProtocol() {
+	var comm_code = 'DEV_PROTOCOL'
+	return $.postJSON('/cmm/find_code',{'code' : comm_code}, function(d) {
+		var $select = $('select[name=dv_protocol]')
+		$select.append($('option').val('A').text('A1'));
+		$.each(d,function(k,v){
+			console.log(k)
+			console.log(v)
+			for(var i)
+			var comm_code = d[v]['comm_code'];
+			console.log(comm_code);
+			
+		})
+	});
+}
 
 
 $(document).ready(function(){
 	$.openMenu('M2_13_30');
 	show_dvtype_table();
+	fn_loadProtocol();
 	
 	$('#ep_map_update').on('click',fn_updateEntryForDevice);
 	
@@ -331,13 +347,6 @@ $(document).ready(function(){
 </div>
 <!-- TABLE -->
 </div>
-
-
-
-
-
-
-
 
 
 

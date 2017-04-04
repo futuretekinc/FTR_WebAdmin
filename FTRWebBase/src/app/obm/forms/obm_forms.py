@@ -32,7 +32,8 @@ class OB_DEVTYPE_FORM(Form):
     dv_location = StringField(u'위치정보', [validators.Length(min=1,max=100)],render_kw={'placeholder' : u'위치정보'})
     dv_timeout = IntegerField(u'타임아웃',[validators.required()],render_kw={'type' : 'number','value' : 0 })
     dv_option = StringField(u'옵션', [validators.Length(min=1,max=200)],render_kw={'placeholder' : u'옵션'})
-    dv_protocol = StringField(u'프로토콜')
+    dv_protocol = SelectField(u'프로토콜', choices=[ ('-', '-' )])
+    
     def __init__(self,*args,**kwargs):
         Form.__init__(self,*args,**kwargs)
         self.dvtype = None
