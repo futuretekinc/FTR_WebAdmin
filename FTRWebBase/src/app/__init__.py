@@ -22,7 +22,7 @@ import numpy as np
 import pandas as pd
 
 def create_db(app,metadata):
-    db = SQLAlchemy(app,metadata=metadata,session_options={'autocommit':False})
+    db = SQLAlchemy(app,metadata=metadata,session_options={'autocommit':False},use_native_unicode=True)
     return db
 
 def init_app():
@@ -49,7 +49,7 @@ from app.cmm.services.menu_handler import find_menu
 from app.obm.controllers import obm
 from app.rtm.controllers import rtm
  
-app.session_interface = SQLAlchemySessionInterface()
+#app.session_interface = SQLAlchemySessionInterface()
 
 @app.before_first_request
 def before_first_request_handler():
@@ -63,7 +63,14 @@ def not_found(error):
 
 @app.errorhandler(500)
 def server_error(error):
+#     app.logger.error(error)
     return render_template('500.html'), 500    
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    app.logger.debug('**************** SHUTDOWN SESSION ****************')
+    app.logger.debug('exception->',exception)
+    db.session.remove()
 
 # --------------------------------------------------
 @app.route('/session_out')
