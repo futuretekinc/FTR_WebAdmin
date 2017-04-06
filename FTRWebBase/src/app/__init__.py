@@ -55,6 +55,11 @@ from app.rtm.controllers import rtm
 def before_first_request_handler():
     app.logger.debug("MENU 초기화")
     session['tree'] = find_menu()
+
+@app.before_request
+def before_request_handler():
+    if 'tree' not in session:
+        session['tree'] = find_menu()
     
 # Sample HTTP error handling
 @app.errorhandler(404)
@@ -68,8 +73,8 @@ def server_error(error):
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
-    app.logger.debug('**************** SHUTDOWN SESSION ****************')
-    app.logger.debug('exception->',exception)
+    #app.logger.debug('**************** SHUTDOWN SESSION ****************')
+    #app.logger.debug('exception->',exception)
     db.session.remove()
 
 # --------------------------------------------------
