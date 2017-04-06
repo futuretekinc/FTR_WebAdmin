@@ -64,14 +64,35 @@ a = {'ep_limit': 'time'
     @staticmethod
     def do_read(param=None):
         err_msg = ''
-        if param is None:
-            return (False,'param is null')
-        pass
+        try:
+            etypes = db.session.query(OB_ENDPOINT_TYPE).all()
+            result = ob_eptype_many.dump(etypes)
+            for row in result.data:
+                row['delete'] = '<span class="ftr_table_delete" key="{ep_type}"><i class="fa fa-trash-o"></i></span>'.format(ep_type=row.get('ep_type'))
+            return fn_jsonify({ 'data' : result.data })
+        except Exception as e:
+            app.logger.error('Except - ',str(e))
+
+        return fn_jsonify({'data' : []})
 
     @staticmethod
     def do_delete(param=None):
         err_msg = ''
         if param is None:
             return (False,'param is null')
-        pass
+        try:
+            if 'ep_type' in param:
+                ep_type = param.get('ep_type')
+            else:
+                ep_type = param
+            epTypeObj = db.session.query(OB_ENDPOINT_TYPE) \
+                            .filter(OB_ENDPOINT_TYPE.ep_type == ep_type) \
+                            .one()
+            db.session.delete(epTypeObj)
+            db.session.commit()
+            return (True, 'success')
+        except Exception as e:
+            err_msg = str(e)
+            
+        return (False, err_msg)
 

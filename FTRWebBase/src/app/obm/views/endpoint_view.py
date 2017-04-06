@@ -47,12 +47,8 @@ class OB_EPTYPE_VIEW(MethodView):
         form = OB_EPTYPE_FORM(request.form)   
         return render_template('obm/eptype.html',form=form) 
     def post(self):
-        eptypes = db.session.query(OB_ENDPOINT_TYPE).all() 
-        result = ob_eptype_many.dump(eptypes)
-        for row in result.data:
-            row['delete'] = '<span class="ftr_table_delete" key="{ep_type}"><i class="fa fa-trash-o"></i></span>'.format(ep_type=row.get('ep_type'))
-        return fn_jsonify({ 'data' : result.data }) 
-
+        return ObEndpointTypeHandler.do_read()
+   
 class OB_EPTYPE_UPDATE(View):
     methods = ['POST']
     def dispatch_request(self):
@@ -83,11 +79,10 @@ class OB_EPTYPE_DELETE(View):
     def dispatch_request(self):
         ep_type = request.form.get('ep_type')
         if ep_type is not None:
-            delObj = db.session.query(OB_ENDPOINT_TYPE).filter(OB_ENDPOINT_TYPE.ep_type == ep_type).first()
-            db.session.delete(delObj)
-            db.session.commit()
+            ret, msg = ObEndpointTypeHandler.do_delete(ep_type)
+            if ret is False:
+                app.logger.debug('Except - ',msg)
         return redirect('/obm/eptype')  
-
 
 
 
