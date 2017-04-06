@@ -4,7 +4,7 @@ from app.cmm.utils import uuid_gen
 
 from app.obm.models.ob_resources import *
 from app.obm.models.sch_ob_resources import *
-
+'''
 __all__ = [ 
             "OB_RESOURCE"
             , "OB_GATEWAY"
@@ -23,3 +23,4 @@ __all__ = [
             , 'ob_devtype_single'
         ]
 
+'''
