@@ -37,13 +37,52 @@
 {% macro show_device_table() -%}
 <table class="table table-striped table-bordered table-hover dataTables-devices">
 	<colgroup>
-		<col width="*" />
-		<col width="50%" />
+		<col width="20%" />
+		<col width="20%" />
+		<col width="20%" />
+		<col width="20%" />
+		<col width="10%" />
+		<col width="10%" />
 	</colgroup>
 	<thead>
 		<tr>
-			<th class="text-center">ID</th>
-			<th class="text-center">NAME</th>
+			<th class="text-center">디바이스ID</th>
+			<th class="text-center">디바이스명</th>
+			<th class="text-center">디바이스타입(상속)</th>
+			<th class="text-center">설명</th>
+			<th class="text-center">설치일자</th>
+			<th class="text-center"><i class="fa fa-gear"></i></th>
+		</tr>
+	</thead>
+	<tbody class="table_view">
+	</tbody>
+</table>
+{%- endmacro %}
+
+{% macro show_endpoint_table_readonly() -%}
+<table class="table table-striped table-bordered table-hover dataTables-endpoints">
+	<colgroup>
+		<col width="16%" />
+		<col width="16%" />
+		<col width="10%" />
+		<col width="10%" />
+		<col width="10%" />
+		<!-- <col width="10%" />
+		<col width="10%" />
+		<col width="10%" /> -->
+		<col width="*" />
+	</colgroup>
+	<thead>
+		<tr>
+			<th class="text-center">엔드포인트ID</th>
+			<th class="text-center">디바이스ID</th>
+			<th class="text-center">이름</th>
+			<th class="text-center">스케일</th>
+			<th class="text-center">단위</th>
+			<th class="text-center">호스트정보</th>
+			<!-- <th class="text-center">데이터수집 주기</th>
+			<th class="text-center">데이터수집 형태</th>
+			<th class="text-center">횟수</th> -->
 		</tr>
 	</thead>
 	<tbody class="table_view">
@@ -54,13 +93,27 @@
 {% macro show_endpoint_table() -%}
 <table class="table table-striped table-bordered table-hover dataTables-endpoints">
 	<colgroup>
+		<col width="16%" />
+		<col width="16%" />
+		<col width="10%" />
+		<col width="10%" />
+		<col width="10%" />
+		<col width="10%" />
+		<col width="10%" />
+		<col width="10%" />
 		<col width="*" />
-		<col width="50%" />
 	</colgroup>
 	<thead>
 		<tr>
-			<th class="text-center">ID</th>
-			<th class="text-center">NAME</th>
+			<th class="text-center">엔드포인트ID</th>
+			<th class="text-center">디바이스ID</th>
+			<th class="text-center">이름</th>
+			<th class="text-center">스케일</th>
+			<th class="text-center">단위</th>
+			<th class="text-center">호스트정보</th>
+			<th class="text-center">데이터수집 주기</th>
+			<th class="text-center">데이터수집 형태</th>
+			<th class="text-center">횟수</th>
 		</tr>
 	</thead>
 	<tbody class="table_view">

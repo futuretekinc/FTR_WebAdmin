@@ -12,34 +12,42 @@ from app.obm.services import *
 OBM > DEVICE
 ------------------------------------------------------------------------------------
 '''
+
 class OB_DEVICE_VIEW(MethodView):
     def get(self):
         form = OB_DEVICE_FORM(request.form)
         return render_template('obm/devices.html',form=form)
     def post(self):
-        users = db.session.query(OB_DEVICE).all()
-        result = ob_device_many.dump(users)
-        return fn_jsonify({ 'data' : result.data }) 
+        return ObDeviceHandler.do_read()
 
-class OB_DEVICE_SAVE(View):
+class OB_DEVICE_SAVE(View): 
     methods = ['POST']
     def dispatch_request(self):
         form = OB_DEVICE_FORM(request.form)
         if form.validate():
-            device = OB_DEVICE()
-            device.dev_name = str(form.dev_name.data)
-            db.session.add(device)
-            db.session.commit()
-            flash('Thanks for registering')
+            ret, msg = ObDeviceHandler.do_save(form.data)
+            if ret is True:
+                return redirect('/obm/devices')  
+            else:
+                app.logger.debug('Except - ',msg)
+                
+        return render_template('obm/devices.html',form=form) 
+
+class OB_DEVICE_DELETE(View):
+    methods = ['POST']
+    def dispatch_request(self):
+        dev_id = request.form.get('dev_id')
+        if dev_id is not None:
+            ret,msg = ObDeviceHandler.do_delete(dev_id)
+            if ret is False:
+                app.logger.debug('Except -', msg)
         return redirect('/obm/devices')  
 
-
-
-
-
-
-
-
+class OB_DEVICE_DETAIL(View):
+    methods = ['POST']
+    def dispatch_request(self):
+        dev_id = request.form.get('dev_id')
+        return ObDeviceHandler.do_deviceDetail(dev_id)
 
 
 

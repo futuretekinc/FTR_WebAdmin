@@ -21,7 +21,10 @@ obm.add_url_rule('/gateway_save',view_func=OB_GATEWAY_SAVE().as_view('ob_gateway
 
 ob_device_view = OB_DEVICE_VIEW().as_view('ob_device_view')
 obm.add_url_rule('/devices',view_func=ob_device_view) 
-
+obm.add_url_rule('/devices_save',view_func=OB_DEVICE_SAVE().as_view('ob_device_save'))
+obm.add_url_rule('/device_delete',view_func=OB_DEVICE_DELETE().as_view('ob_device_delete'))
+obm.add_url_rule('/device_detail',view_func=OB_DEVICE_DETAIL().as_view('ob_device_detail'))
+ 
 # -------------------------------------------------------------------------------------------
 
 

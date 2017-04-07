@@ -18,7 +18,17 @@ class OB_DEVICE_FORM(Form):
     dev_type = SelectField(u'디바이스 타입',choices=[('','NONE')],render_kw={'style' : "text-transform:uppercase", 'placeholder' : 'required'})
     dev_inst = DateField(u'설치일자', format="%Y-%m-%d",default=datetime.today,validators=[validators.required()],render_kw={'type' : 'date' })
     dev_info = TextAreaField(u'설명', [validators.required(),validators.Length(min=1,max=300)],render_kw={'placeholder' : u'디바이스 설명'})
-    
+    def __init__(self,*args,**kwargs):
+        Form.__init__(self,*args,**kwargs)
+        self.dev_type.choices = self.dv_type_choice()
+
+    def dv_type_choice(self):
+        comm_code = 'DEV_PROTOCOL'
+        rows = db.session.query(OB_DEVICE_TYPE).all()
+        buf = []
+        for x in rows:
+            buf.append((x.dv_type, x.dv_name))
+        return buf    
     
     
     

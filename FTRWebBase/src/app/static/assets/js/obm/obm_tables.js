@@ -12,6 +12,25 @@ function render_datatable(table_id, url, columns) {
 	});    	
 }
 
+function render_datatable_no_search(table_id, url, columns) {
+	$(table_id).DataTable({
+		'processing' : true 
+		, 'bLengthChange' : false
+		, 'destroy' : true 
+		/* hide searhbar */
+		, 'bFilter' : false
+		, 'bInfo' : false
+		/* hide searhbar */
+		
+		, 'ajax' : {
+			'url' : url ,
+			'type' : 'POST' ,
+		}
+		, 'columns' : columns
+		, 'columnDefs' : [ {'className' : 'text-center', 'targets' : 'all'} ]
+	});    	
+}
+
 function show_resource_table() {
 	var target_name = 'resources'
 	var table_id = '.dataTables-'+target_name;
@@ -41,8 +60,12 @@ function show_device_table() {
 	var columns = [
 		{'data' : 'dev_id'} ,
 		{'data' : 'dev_name'} ,
+		{'data' : 'dev_type'} ,
+		{'data' : 'dev_info'} ,
+		{'data' : 'dev_inst'} ,
+		{'data' : 'delete'} ,
 	];
-	render_datatable(table_id, url, columns);
+	render_datatable_no_search(table_id, url, columns);
 }
 
 function show_endpoint_table() {
@@ -54,7 +77,7 @@ function show_endpoint_table() {
 		{'data' : 'ep_name'} ,
 	];
 //	console.log(table_id)
-	render_datatable(table_id, url, columns);   	
+	render_datatable_no_search(table_id, url, columns);   	
 }
 
 

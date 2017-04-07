@@ -20,14 +20,16 @@ class OB_DEVICE(db.Model):
     dev_id = db.Column(db.NVARCHAR(32),nullable=False,default=uuid_gen(),primary_key=True)
     dev_name = db.Column(db.NVARCHAR(50),nullable=False)
     dev_type = db.Column(db.NVARCHAR(50),nullable=False)
-    dev_inst = db.Column(db.DATETIME)
+    dev_inst = db.Column(db.DATE)
     dev_info = db.Column(db.NVARCHAR(200))
     
 class OB_ENDPOINT(db.Model):
     __tablename__ = "OB_ENDPOINT"
     ep_id = db.Column(db.NVARCHAR(32),nullable=False,default=uuid_gen(),primary_key=True)
+    dev_id = db.Column(db.NVARCHAR(32),nullable=False,primary_key=True)
     ep_type = db.Column(db.NVARCHAR(50),nullable=False,primary_key=True)
     ep_name = db.Column(db.NVARCHAR(50),nullable=False)
+    ep_scale = db.Column(db.Numeric(precision=15,scale=3,asdecimal=False),default=1.0)
     ep_unit = db.Column(db.NVARCHAR(20),nullable=True)
     ep_pr_host = db.Column(db.NVARCHAR(20),nullable=False,default='127.0.0.1') # parent domain(connection info)
     ep_interval = db.Column(db.Integer,nullable=False,default=10)
@@ -42,7 +44,6 @@ class OB_ENDPOINT_TYPE(db.Model):
     ep_type = db.Column(db.NVARCHAR(50),nullable=False,primary_key=True)
     ep_name = db.Column(db.NVARCHAR(50),nullable=False)
     ep_scale = db.Column(db.Numeric(precision=15,scale=3,asdecimal=False),default=1.0)
-#     ep_scale = db.Column(db.NVARCHAR(15),default='1.0')
     ep_unit = db.Column(db.NVARCHAR(20),nullable=True)
     ep_pr_host = db.Column(db.NVARCHAR(60),nullable=False,default='127.0.0.1') # parent domain(connection info)
     ep_interval = db.Column(db.Integer,nullable=False,default=10)

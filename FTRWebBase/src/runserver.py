@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import os
-from gevent.wsgi import WSGIServer
 from app import app
+
+from gevent.wsgi import WSGIServer
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop

@@ -3,6 +3,105 @@ from app import app, db
 from app.obm.models import *
 from app.cmm.utils.decimal_jsonizer import fn_jsonify
 
+class ObDeviceHandler(object):
+    
+    @staticmethod
+    def do_deviceDetail(param=None):
+        ''' select [endpoint] where dev_id = param '''
+        try:
+            if 'dev_id' in param:
+                dev_id = param.get('dev_id')
+            else:
+                dev_id = param
+
+            eps = db.session.query(OB_ENDPOINT).filter(OB_ENDPOINT.dev_id == dev_id).all()
+            result = ob_endpoint_many.dump(eps)
+            return fn_jsonify({ 'data' : result.data })
+        except Exception as e:
+            app.logger.debug(str(e))
+
+        return fn_jsonify({'data' : []})
+    
+    @staticmethod
+    def do_save(param=None):
+        err_msg = ''
+        if param is None:
+            return (False,'param is null')
+        try:
+            saveObj = OB_DEVICE() 
+            saveObj.dev_id = uuid_gen()
+            for attr, value in param.items():
+                setattr(saveObj, attr, str(value))
+            
+            dev_id = saveObj.dev_id
+            dv_type = saveObj.dev_type
+
+            rs = db.session.query(OB_ENDPOINT_TYPE) \
+                    .join(OB_DEVICE_TYPE_MAP,OB_ENDPOINT_TYPE.ep_type == OB_DEVICE_TYPE_MAP.ep_type) \
+                    .filter(OB_DEVICE_TYPE_MAP.dv_type == dv_type).all()
+                                
+            for x in rs:
+                ep = OB_ENDPOINT()
+                ep.dev_id = dev_id
+                ep.ep_id = uuid_gen()
+                print(x.__table__.c.items())
+                for k, _ in x.__table__.c.items():
+                    kval = getattr(x,k)
+                    setattr(ep,k,kval)
+                db.session.add(ep)
+                
+            db.session.add(saveObj)
+            db.session.commit()
+            return (True, 'success')
+        except Exception as e:
+            err_msg = str(e)
+
+        return (False, err_msg)
+        
+
+    @staticmethod
+    def do_read(param=None):
+        err_msg = ''
+        try:
+            device = db.session.query(OB_DEVICE).all()
+            result = ob_device_many.dump(device)
+            for row in result.data:
+                row['delete'] = '<span class="ftr_table_delete" key="{dev_id}"><i class="fa fa-trash-o"></i></span>'.format(dev_id=row.get('dev_id'))
+            return fn_jsonify({ 'data' : result.data }) 
+        except Exception as e:
+            app.logger.error('Except - ',str(e))
+
+        return fn_jsonify({'data' : []})
+            
+    @staticmethod
+    def do_delete(param=None):
+        err_msg = ''
+        if param is None:
+            return (False,'param is null')
+        try:
+            if 'dev_id' in param:
+                dev_id = param.get('dev_id')
+            else:
+                dev_id = param
+            deleteObj = db.session.query(OB_DEVICE) \
+                            .filter(OB_DEVICE.dev_id == dev_id) \
+                            .one()
+            db.session.delete(deleteObj)
+            
+            # endpoint - DELETE
+            deleteEp = db.session.query(OB_ENDPOINT) \
+                            .filter(OB_ENDPOINT.dev_id == dev_id) \
+                            .all()
+            for x in deleteEp:
+                db.session.delete(x)
+
+            db.session.commit()
+            return (True, 'success')
+        except Exception as e:
+            err_msg = str(e)
+            
+        return (False, err_msg)        
+        
 class ObDeviceTypeMapHandler(object):
 
     @staticmethod
@@ -77,6 +176,10 @@ FROM
             app.logger.error('Except - ',str(e))            
         
         return fn_jsonify({})
+
+
+
+
 
 class ObDeviceTypeHandler(object):
     
