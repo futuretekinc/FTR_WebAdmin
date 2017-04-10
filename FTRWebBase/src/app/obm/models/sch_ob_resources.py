@@ -35,6 +35,7 @@ SqlAlchemyObjectSerializer
 ob_resource_many         = SCH_OB_RESOURCE(many=True)
 ob_gateway_many          = SCH_OB_GATEWAY(many=True)
 ob_device_many           = SCH_OB_DEVICE(many=True)
+ob_device_single         = SCH_OB_DEVICE(many=False)
 ob_endpoint_many         = SCH_OB_ENDPOINT(many=True)
 ob_eptype_many           = SCH_OB_EPTYPE(many=True)
 ob_dvtype_many           = SCH_OB_DEVTYPE(many=True)

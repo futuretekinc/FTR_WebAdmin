@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
-
 import os
-from app import app
 
-from gevent.wsgi import WSGIServer
-from tornado.web import FallbackHandler, RequestHandler, Application
+from tornado.ioloop import IOLoop
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
-from tornado.ioloop import IOLoop
+from tornado.web import FallbackHandler, RequestHandler, Application
 
+from app import app
 
 def WSGIApplication(app):
     tr = WSGIContainer(app)

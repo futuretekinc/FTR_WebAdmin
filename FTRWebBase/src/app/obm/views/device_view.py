@@ -16,9 +16,14 @@ OBM > DEVICE
 class OB_DEVICE_VIEW(MethodView):
     def get(self):
         form = OB_DEVICE_FORM(request.form)
-        return render_template('obm/devices.html',form=form)
+        epForm = OB_ENDPOINT_FORM(request.form)
+        return render_template('obm/devices.html',form=form,epForm=epForm)
     def post(self):
         return ObDeviceHandler.do_read()
+
+class OB_DEVICE_DETAIL_VIEW(MethodView):
+    def post(self):
+        return ObDeviceHandler.do_deviceDetail(request.form)
 
 class OB_DEVICE_SAVE(View): 
     methods = ['POST']
@@ -43,11 +48,6 @@ class OB_DEVICE_DELETE(View):
                 app.logger.debug('Except -', msg)
         return redirect('/obm/devices')  
 
-class OB_DEVICE_DETAIL(View):
-    methods = ['POST']
-    def dispatch_request(self):
-        dev_id = request.form.get('dev_id')
-        return ObDeviceHandler.do_deviceDetail(dev_id)
 
 
 

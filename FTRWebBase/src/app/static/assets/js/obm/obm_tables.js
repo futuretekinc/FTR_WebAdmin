@@ -56,7 +56,7 @@ function show_gateway_table() {
 function show_device_table() {
 	var target_name = 'devices'
 	var table_id = '.dataTables-'+target_name;
-	var url = '/obm/' + target_name ;
+	var url = '/obm/' + target_name ; 
 	var columns = [
 		{'data' : 'dev_id'} ,
 		{'data' : 'dev_name'} ,
@@ -71,14 +71,23 @@ function show_device_table() {
 function show_endpoint_table() {
 	var target_name = 'endpoints'
 	var table_id = '.dataTables-'+target_name;
-	var url = '/obm/' + target_name ;
+	var url = '/obm/' + target_name ; 
 	var columns = [
 		{'data' : 'ep_id'} ,
+		{'data' : 'dev_id'} ,
 		{'data' : 'ep_name'} ,
+		{'data' : 'ep_scale'} ,
+		{'data' : 'ep_unit'} ,
+		{'data' : 'ep_pr_host'} ,
+		{'data' : 'ep_interval'} ,
+		{'data' : 'ep_limit'} ,
+		{'data' : 'ep_hour'} ,
+		{'data' : 'ep_day'} ,
+		{'data' : 'ep_month'} ,
+		{'data' : 'ep_count'} ,
 	];
-//	console.log(table_id)
-	render_datatable_no_search(table_id, url, columns);   	
-}
+	render_datatable(table_id, url, columns);   	
+} 
 
 
 function show_eptype_table() {

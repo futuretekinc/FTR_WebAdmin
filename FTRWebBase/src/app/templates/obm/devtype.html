@@ -342,8 +342,8 @@ $(document).ready(function(){
 		<!-- TAB1 -->
 		<div id="tab-1" class="tab-pane active">
 			<div class="panel-body">
-				<div class="row">
 				{% call render_form_noSubmit(form, form_id='form_id') %}
+				<div class="row">
 					<div class="col-md-6">
 						<div class="col-xs-6">{{ render_field(form.dv_type) }}</div>
 						<div class="col-xs-6">{{ render_field(form.dv_name) }}</div>

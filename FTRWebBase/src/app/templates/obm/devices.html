@@ -2,7 +2,7 @@
 {% from "macro/mc_form.html" import render_field, render_form,render_form_noSubmit, render_checkbox_field,render_date_field %}
 {% from "macro/mc_header.html" import css_html_table,js_html_table %}
 {% from "macro/mc_components.html" import render_multiselect %}
-{% from "obm/obm_tables.html" import show_device_table,show_eptype_table_readonly,show_endpoint_table_readonly  %}
+{% from "obm/obm_tables.html" import show_device_table,show_eptype_table_readonly,show_endpoint_table_readonly,show_endpoint_table  %}
 
 <!-- CSS -->
 {% block styles %}
@@ -44,8 +44,55 @@ function fn_onClickNewDevice() {
 	fn_activeTab('tab-2');
 }
 
+function fn_loadEpType(eptypes) {
+	var $sel = $('#sel_ep_type');
+	$sel.html('');
+	var ept = eptypes || [];
+	for(var i = 0; i < ept.length; i++) {
+		var eVal = ept[i]['ep_type'];
+		var eTxt = ept[i]['ep_name'] + '('+eVal+')';
+		$opt = $('<option>',{'value' : eVal ,'text' : eTxt });
+		$sel.append($opt);
+	}
+}
+
+//
+function fn_onAddNewEptype() {
+	console.log('add new eptype')
+}
+
+function fn_openDeviceDetailTab() {
+	/**
+	1) hidden_dev_id로 디바이스 정보 검색 
+	2) endpoint 정보 업데이트
+	*/
+	var dev_id = $('#hidden_dev_id').text();
+	
+	$.postJSON('/obm/device_detail',{'dev_id' : dev_id},function(d){
+		console.log(JSON.stringify(d,null,'  '))
+		var device = d['device'];
+		var dev_id = device['dev_id'];
+		var dev_name = device['dev_name'];
+		$('#dt_dev_id').text(dev_id);
+		$('#dt_dev_name').text(dev_name); 
+		
+		/* reload table */
+		fn_onClickTableRow(dev_id);
+		
+		// sel_ep_type
+		fn_loadEpType(d['eptypes']);
+		console.log(dev_id)
+		console.log(dev_name)
+	});
+	
+	//$('.dataTables-endpoints td:nth-child(1)').hide()
+	$(document).on('click','#ep_table .table_view tr',function(){
+		console.log('row click!!!')
+	});
+}
 function fn_onClickModifyEndpoint() {
 	fn_activeTab('tab-3');
+	fn_openDeviceDetailTab();
 }
 
 
@@ -72,7 +119,7 @@ function fn_onClickTableRow(dev_id) {
 	// dev_id > select:endpoint_table
 	 
 	var targetUrl = '/obm/device_detail';
-	
+	var dt;
 	$.postJSON(targetUrl,{'dev_id' : dev_id}, function(d){
 		//console.log(JSON.stringify(d, null, '  '))
 		/*
@@ -103,7 +150,7 @@ function fn_onClickTableRow(dev_id) {
 	
 		//console.log(ds);
 	
-		$('.dataTables-endpoints').DataTable({
+		dt = $('.dataTables-endpoints').DataTable({
 			'processing' : true 
 			, 'bLengthChange' : false
 			, 'destroy' : true
@@ -114,6 +161,11 @@ function fn_onClickTableRow(dev_id) {
 			, 'columnDefs' : [ {'className' : 'text-center', 'targets' : 'all'} ]
 		});  
 		
+	}).done(function(){
+		/* HIDE DEVICE ID*/
+		$('#ep_table table th:nth-child(2)').hide();
+		$('#ep_table table td:nth-child(2)').hide();
+		$('#ep_table table').css('width','auto');
 	});
 	
 	//render_datatable2(targetUrl+'?dv_type'+dv_type,columns);
@@ -127,8 +179,9 @@ $(document).ready(function(){
 	 show_device_table();
 	 fn_onClickTableRow('');
 	 
-	 $('#endpoint_mod').click(fn_onClickModifyEndpoint);
-	 
+	$('#endpoint_mod').click(fn_onClickModifyEndpoint);
+	$('#add_new_eptype').click(fn_onAddNewEptype);
+	
 	$(document).on('click','.ftr_table_delete',function(){
 		var key = $(this).attr('key');
 		ftr_alert_confirm_normal(" 디바이스 ["+key+"]를 삭제 하시겠습니까?", function(result) {
@@ -160,10 +213,12 @@ $(document).ready(function(){
 		$('#hidden_dev_id').text(dev_id);
 		$('#endpoint_mod').attr('disabled',false);
 		fn_onClickTableRow(dev_id);
+		fn_openDeviceDetailTab();
+		$('#tab3').show();
    });	
 	
 	// 직접 접근 막기
-	//$('#tab3').hide();
+	$('#tab3').hide();
 	$('#endpoint_mod').attr('disabled',true);
 });
 
@@ -318,7 +373,7 @@ $(document).ready(function(){
 
 
 
-
+/*
 
 function fn_isActiveTab1() {
 	if(false == $('#tab-1').hasClass('active')) {
@@ -327,14 +382,10 @@ function fn_isActiveTab1() {
 	}
 	return true;
 }
-
-
  
 function fn_onNew() {
 	location.href='/obm/devtype'
 }
-
-
 
 function fn_onUpdate() {
 	var $form = $('#form_id');
@@ -343,11 +394,6 @@ function fn_onUpdate() {
 	$form.submit();
 }
 
-/**
- * 디바이스에 속해 있는 모든 엔드포인트 리스트를 가져온다.
- multiselect
- multiselect_to
- */
 function fn_loadEntryForDevice(dv_type) {
 	var param = {'dv_type' : dv_type }
 	return $.getJSON('/obm/devtype_map', param , function(d){
@@ -392,7 +438,7 @@ function fn_updateEntryForDevice(e) {
 }
 
 
-
+*/
 
 </script>
 
@@ -441,19 +487,25 @@ function fn_updateEntryForDevice(e) {
 							</div>						
 						</div>
 						<div class="col-md-12">
+						<div class="row table-responsive">
 							{{ show_device_table() }}
 						</div>
+						</div>
+						<div class="col-md-12">
 						<hr class="hr-line-dashed">
+						</div>
 						<div class="col-md-12">
 							<div class="pull-left" id="dev_title">
 								<!-- <h4><i class="fa fa-microchip"></i> [DEVICE]</h4> -->
 							</div>
 							<div class="pull-right">
-								<button id="endpoint_mod" class='btn btn-default'>엔드포인트 관리</button>
+								<button id="endpoint_mod" class='btn btn-danger'>엔드포인트 관리</button>
 							</div>		
 						</div>
 						<div class="col-md-12">
-							{{ show_endpoint_table_readonly() }}				
+						<div class="row table-responsive">
+							{{ show_endpoint_table_readonly() }}
+						</div>
 						</div>
 						<!-- TABLE -->
 					</div>
@@ -483,7 +535,11 @@ function fn_updateEntryForDevice(e) {
 							<li class="active"><a>엔드포인트 타입</a></li>
 							</ol>
 						</h4>
-						{{ show_eptype_table_readonly() }}
+						<div class="row table-responsive">
+							<div class="col-lg-12">
+								{{ show_eptype_table_readonly() }}
+							</div>
+						</div>						
 						</div>
 						<!-- Table -->
 				</div>
@@ -497,6 +553,76 @@ function fn_updateEntryForDevice(e) {
 					<!-- 수정 폼 -->				
 					<!-- 엔드포인트 타입  -->
 					<!-- 엔드포인트 목록 -->
+					<div class="row table-responsive">
+						<div class="col-lg-12 m-b">
+							<h4><i class="fa fa-microchip"></i> 디바이스 정보</h4>
+						</div>
+						<div class="col-lg-12">
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="dev_name" class="control-label col-md-3"> <label for="dev_name">디바이스명</label> </label>
+									<div class="col-md-9">
+										<span class="form-control input-sm m-b" id="dt_dev_name"></span> 
+									</div>
+								</div>						
+							</div>
+							<div class="col-md-6">
+								<div class="form-group">
+									<label for="dev_id" class="control-label col-md-3"> <label for="dev_id">디바이스ID</label> </label>
+									<div class="col-md-9">
+										<span class="form-control input-sm m-b" id="dt_dev_id"></span> 
+									</div>
+								</div>						
+							</div>
+						</div>
+						<div class="col-lg-12">
+						<hr class="hr-line-dashed">
+						</div>
+						<div class="col-lg-12">
+							<h4><i class="fa fa-thermometer-half"></i> 엔드포인트 관리</h4>
+							<div class="row m-t">
+								<div class="col-md-12 m-b">
+									<div class="col-xs-6">
+										<div class="input-group">
+											<select class="form-control" id="sel_ep_type">
+												<option></option>
+											</select>
+											<span class="input-group-btn"> 
+												<button type="button" id="add_new_eptype" class="btn btn-info">타입추가</button> 
+                                        	</span>
+                                        </div>										
+									</div>
+								</div>
+								<div class="col-md-12">
+									<hr class="hr">
+								</div>
+								<div class="col-md-12">
+									{% call render_form_noSubmit(epForm, form_id='epForm_id') %}
+									<div class="row">
+										<div class="col-md-6">
+											<div class="col-xs-6">{{ render_field(epForm.ep_name) }}</div>
+											<div class="col-xs-6">{{ render_field(epForm.ep_scale) }}</div>
+											<div class="col-xs-6">{{ render_field(epForm.ep_limit) }} </div>
+										</div>
+										<div class="col-md-6">
+											<div class="col-xs-12">{{ render_field(epForm.ep_type) }}</div>
+										</div>
+									</div>
+									{% endcall %}
+									<div class="text-right">
+										<button id="ep_update" class='btn btn-primary'>수정</button>
+									</div>						
+								</div>
+							</div>
+							
+						</div>
+						<div class="col-lg-12">
+						<hr class="hr-line-dashed">
+						</div>
+						<div id="ep_table" class="col-lg-12">
+							{{ show_endpoint_table() }}
+						</div>
+					</div>					
 				</div>
 			</div>
 			<!-- TAB3 -->

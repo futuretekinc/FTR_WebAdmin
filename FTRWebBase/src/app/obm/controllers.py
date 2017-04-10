@@ -9,6 +9,7 @@ obm = Blueprint('obm', __name__, url_prefix='/obm')
 ob_resource_view = OB_RESOURCE_VIEW().as_view('ob_resource_view')
 ob_gateway_view = OB_GATEWAY_VIEW().as_view('ob_gateway_view')
 ob_endpoint_view = OB_ENDPOINT_VIEW().as_view('ob_endpoint_view')
+ob_device_detail_view = OB_DEVICE_DETAIL_VIEW().as_view('ob_device_detail_view')
 ob_eptype_view = OB_EPTYPE_VIEW().as_view('ob_eptype_view')  
 
 obm.add_url_rule('/resources',view_func=ob_resource_view)
@@ -23,7 +24,7 @@ ob_device_view = OB_DEVICE_VIEW().as_view('ob_device_view')
 obm.add_url_rule('/devices',view_func=ob_device_view) 
 obm.add_url_rule('/devices_save',view_func=OB_DEVICE_SAVE().as_view('ob_device_save'))
 obm.add_url_rule('/device_delete',view_func=OB_DEVICE_DELETE().as_view('ob_device_delete'))
-obm.add_url_rule('/device_detail',view_func=OB_DEVICE_DETAIL().as_view('ob_device_detail'))
+obm.add_url_rule('/device_detail',view_func=ob_device_detail_view)
  
 # -------------------------------------------------------------------------------------------
 

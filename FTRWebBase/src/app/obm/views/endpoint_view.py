@@ -12,28 +12,28 @@ from app.obm.services import *
 OBM > ENDPOINT
 ------------------------------------------------------------------------------------
 '''
-
+'''OB_ENDPOINT VIEW'''
 class OB_ENDPOINT_VIEW(MethodView):
     def get(self):
         form = OB_ENDPOINT_FORM(request.form)
-        return render_template('obm/endpoint.html',form=form)
+        return render_template('obm/endpoints.html',form=form)
     
     def post(self):
-        data = db.session.query(OB_ENDPOINT).all()
-        result = ob_endpoint_many.dump(data)
-        return fn_jsonify({ 'data' : result.data }) 
-
+        return ObEndpointHandler.do_read() 
+    
+'''OB_ENDPOINT SAVE'''
 class OB_ENDPOINT_SAVE(View):
     methods = ['POST']
     def dispatch_request(self):
         form = OB_ENDPOINT_FORM(request.form)
         if form.validate():
-            endpoint = OB_ENDPOINT()
-            endpoint.ep_name = str(form.ep_name.data)
-            db.session.add(endpoint)
-            db.session.commit()
-            flash('Thanks for registering')
-        return redirect('/obm/endpoints')  
+            ret, msg = ObEndpointHandler.do_save(form.data)
+            if ret is True:
+                return redirect('/obm/endpoints')
+            else:
+                app.logger.debug('Except - ',msg)
+            
+        return render_template('obm/endpoints.html',form=form)
 
 
 '''

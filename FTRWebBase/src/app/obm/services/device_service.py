@@ -13,10 +13,13 @@ class ObDeviceHandler(object):
                 dev_id = param.get('dev_id')
             else:
                 dev_id = param
-
             eps = db.session.query(OB_ENDPOINT).filter(OB_ENDPOINT.dev_id == dev_id).all()
+            dev = db.session.query(OB_DEVICE).filter(OB_DEVICE.dev_id == dev_id).one()
+            epts = db.session.query(OB_ENDPOINT_TYPE).all()
+            dev = ob_device_single.dump(dev)
+            eptypes = ob_eptype_many.dump(epts)
             result = ob_endpoint_many.dump(eps)
-            return fn_jsonify({ 'data' : result.data })
+            return fn_jsonify({ 'data' : result.data, 'device' : dev.data, 'eptypes' : eptypes.data })
         except Exception as e:
             app.logger.debug(str(e))
 
