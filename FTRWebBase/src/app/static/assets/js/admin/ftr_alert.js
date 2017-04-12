@@ -26,3 +26,20 @@ swal({
 });
 
 }
+
+function ftr_bootbox_confirm(msg,_callback) {
+	bootbox.confirm({
+	    message: msg,
+	    buttons: {
+	        confirm: {
+	            label: '<i class="fa fa-check"></i> 네',
+	            className: 'btn-success'
+	        },
+	        cancel: {
+	            label: '<i class="fa fa-times"></i> 아니오',
+	            className: 'btn-danger'
+	        }
+	    },
+	    callback: _callback
+	});
+}

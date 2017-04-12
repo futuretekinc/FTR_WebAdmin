@@ -48,8 +48,21 @@ from app.cmm.services.menu_handler import find_menu
 
 from app.obm.controllers import obm
 from app.rtm.controllers import rtm
- 
+
+
+from sqlalchemy import exc
+from sqlalchemy import event
+from sqlalchemy.pool import Pool
+
 #app.session_interface = SQLAlchemySessionInterface()
+@event.listens_for(Pool,"checkout")
+def ping_connection(dbapi_connection, connection_record, connection_proxy):
+    cursor = dbapi_connection.cursor()
+    try:
+        cursor.execute('SELECT 1')
+    except:
+        raise exc.DisconnectionError()
+    cursor.close()
 
 @app.before_first_request
 def before_first_request_handler():

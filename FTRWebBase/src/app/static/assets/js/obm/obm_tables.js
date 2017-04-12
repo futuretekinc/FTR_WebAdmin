@@ -21,7 +21,6 @@ function render_datatable_no_search(table_id, url, columns) {
 		, 'bFilter' : false
 		, 'bInfo' : false
 		/* hide searhbar */
-		
 		, 'ajax' : {
 			'url' : url ,
 			'type' : 'POST' ,

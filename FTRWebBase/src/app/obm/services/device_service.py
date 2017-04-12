@@ -60,8 +60,33 @@ class ObDeviceHandler(object):
             err_msg = str(e)
 
         return (False, err_msg)
-        
-
+    
+    @staticmethod
+    def do_save_type(param=None):
+        err_msg = ''
+        if param is None:
+            return (False,'param is null')
+        try:    
+            dev_id = param.get('dev_id')
+            ep_type = param.get('ep_type')
+     
+            rs = db.session.query(OB_ENDPOINT_TYPE) \
+                    .filter(OB_ENDPOINT_TYPE.ep_type == ep_type) \
+                    .first()     
+                    
+            ep = OB_ENDPOINT()
+            ep.dev_id = dev_id
+            ep.ep_id = uuid_gen()
+            for k, _ in rs.__table__.c.items():
+                kval = getattr(rs,k)
+                setattr(ep,k,kval)
+            db.session.add(ep)
+            db.session.commit()
+            return (True, 'success')
+        except Exception as e:
+            err_msg = str(e)
+        return (False, err_msg)
+    
     @staticmethod
     def do_read(param=None):
         err_msg = ''

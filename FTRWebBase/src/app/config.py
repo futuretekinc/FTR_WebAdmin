@@ -25,7 +25,7 @@ SQLALCHEMY_TRACK_MODIFICATIONS = False
 SQLALCHEMY_ECHO = DEBUG
 SQLALCHEMY_COMMIT_ON_TEARDOWN = True
 SQLALCHEMY_POOL_SIZE = 10
-#SQLALCHEMY_POOL_TIMEOUT = 60
+SQLALCHEMY_POOL_TIMEOUT = 10
 SQLALCHEMY_POOL_RECYCLE = 500
 
 
@@ -35,7 +35,7 @@ DATABASE_CONNECT_OPTIONS = {}
 # using 2 per available processor cores - to handle
 # incoming requests using one and performing background
 # operations using the other.
-THREADS_PER_PAGE = 2
+#THREADS_PER_PAGE = 2
 
 # Enable protection agains *Cross-site Request Forgery (CSRF)*
 CSRF_ENABLED     = True

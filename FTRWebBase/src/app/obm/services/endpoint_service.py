@@ -3,10 +3,13 @@ from app import app, db
 from app.obm.models import *
 from app.cmm.utils.decimal_jsonizer import fn_jsonify
 
-if __name__ == '__main__':
+if __name__ == '__main__x':
     import requests
     r = requests.post('http://localhost:5000/obm/endpoints')
     print(r.json())
+
+
+
 
 '''OB_ENDPOINT Handler'''
 class ObEndpointHandler(object):
@@ -15,23 +18,25 @@ class ObEndpointHandler(object):
     def do_update(param=None):
         err_msg = ''
         if param is None:
-            return (False,'param is null')
+            return fn_jsonify({ 'result' : False, 'msg' : 'param is null'})
         try:
-            '''
-            dv_type = param.get('dv_type')
-            updateObj = db.session.query(OB_ENDPOINT) \
-                    .filter(OB_ENDPOINT.dv_type == dv_type) \
+            ep_id = param.get('ep_id')
+            obj = db.session.query(OB_ENDPOINT) \
+                    .filter(OB_ENDPOINT.ep_id == ep_id) \
                     .first()
-            for attr, value in param.items():
-                setattr(updateObj, attr, str(value))
-
-            '''
+            obj.ep_scale    = str(param.get('ep_scale'))
+            obj.ep_unit     = str(param.get('ep_unit'))
+            obj.ep_pr_host  = str(param.get('ep_pr_host'))
+            obj.ep_interval = str(param.get('ep_interval'))
+            obj.ep_hour     = str(param.get('ep_hour'))
+            obj.ep_day      = str(param.get('ep_day'))
+            obj.ep_month    = str(param.get('ep_month'))
+            obj.ep_count    = str(param.get('ep_count'))
             db.session.commit()
-            return (True, 'success')
+            return fn_jsonify({ 'result' : True })
         except Exception as e:
             err_msg = str(e)
-
-        return (False, err_msg)
+        return fn_jsonify({ 'result' : False, 'msg' : err_msg})
 
     @staticmethod
     def do_save(param=None):
@@ -69,24 +74,20 @@ class ObEndpointHandler(object):
     def do_delete(param=None):
         err_msg = ''
         if param is None:
-            return (False,'param is null')
+            return fn_jsonify({ 'result' : False, 'msg' : 'param is null'})
         try:
-            '''
-            if 'dv_type' in param:
-                dv_type = param.get('dv_type')
-            else:
-                dv_type = param
-            deleteObj = db.session.query(OB_ENDPOINT) \
-                            .filter(OB_ENDPOINT.dv_type == dv_type) \
-                            .one()
-            db.session.delete(deleteObj)
+            ep_id = param
+            delobj = db.session.query(OB_ENDPOINT).filter(OB_ENDPOINT.ep_id == ep_id).delete()
             db.session.commit()
-            '''
-            return (True, 'success')
+            return fn_jsonify({ 'result' : True })
         except Exception as e:
             err_msg = str(e)
-            
-        return (False, err_msg)
+        return fn_jsonify({ 'result' : False, 'msg' : err_msg})
+
+
+if __name__ == '__main__23':
+    ObEndpointHandler.do_delete('14a4311b05ec44b1a1a03c035ffef326')
+
   
 class ObEndpointTypeHandler(object):
     
@@ -136,6 +137,8 @@ a = {'ep_limit': 'time'
         try:
             epTypeObj = OB_ENDPOINT_TYPE() 
             for attr, value in param.items():
+                if attr == 'ep_type':
+                    value = value.upper()
                 setattr(epTypeObj, attr, str(value))
             
             db.session.add(epTypeObj)

@@ -29,6 +29,7 @@ class OB_DEVICE_SAVE(View):
     methods = ['POST']
     def dispatch_request(self):
         form = OB_DEVICE_FORM(request.form)
+        epForm = OB_DEVICE_FORM(request.form)
         if form.validate():
             ret, msg = ObDeviceHandler.do_save(form.data)
             if ret is True:
@@ -36,8 +37,24 @@ class OB_DEVICE_SAVE(View):
             else:
                 app.logger.debug('Except - ',msg)
                 
-        return render_template('obm/devices.html',form=form) 
+        return render_template('obm/devices.html',form=form,epForm=epForm) 
 
+class OB_ENDPOINT_SAVE_TYPE(View):
+    methods = ['POST']
+    def dispatch_request(self):
+        form = OB_DEVICE_FORM(request.form)
+        epForm = OB_DEVICE_FORM(request.form)
+        dev_id = request.form.get('dev_id')
+        ep_type = request.form.get('ep_type')
+        param = { 'dev_id' : dev_id, 'ep_type' : ep_type }
+        ret, msg = ObDeviceHandler.do_save_type(param)
+        if ret is True:
+            return fn_jsonify({ 'result' : 'success' })
+        else:
+            app.logger.debug('Except - ',msg)
+            fn_jsonify({ 'result' : 'fail' , 'msg' : msg })
+            
+    
 class OB_DEVICE_DELETE(View):
     methods = ['POST']
     def dispatch_request(self):

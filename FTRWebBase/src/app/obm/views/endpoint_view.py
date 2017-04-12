@@ -35,6 +35,16 @@ class OB_ENDPOINT_SAVE(View):
             
         return render_template('obm/endpoints.html',form=form)
 
+class OB_ENDPOINT_UPDATE(View):
+    methods = ['POST']
+    def dispatch_request(self):
+        return ObEndpointHandler.do_update(request.form)
+
+class OB_ENDPOINT_DELETE(View):
+    methods = ['POST']
+    def dispatch_request(self):
+        ep_id = request.form.get('ep_id')
+        return ObEndpointHandler.do_delete(ep_id)
 
 '''
 ------------------------------------------------------------------------------------

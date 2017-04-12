@@ -34,10 +34,10 @@ class OB_DEVICE_FORM(Form):
     
     
 class OB_ENDPOINT_FORM(Form):
-    ep_id = StringField(u'ep_id',[validators.required(), validators.Length(min=32,max=32)]) 
-    dev_id = StringField(u'dev_id',[validators.required(), validators.Length(min=32,max=32)]) 
+    ep_id = StringField(u'엔드포인트id',[validators.required(), validators.Length(min=32,max=32)]) 
+    dev_id = StringField(u'디바이스id',[validators.required(), validators.Length(min=32,max=32)]) 
     ep_type = StringField(u'타입', [validators.required(),validators.Length(min=1,max=50)],render_kw={'style' : "text-transform:uppercase", 'placeholder' : 'required'})
-    ep_name = StringField(u'이름', [validators.required(),validators.Length(min=1,max=50)],render_kw={'placeholder' : 'unit'})
+    ep_name = StringField(u'엔드포인트명', [validators.required(),validators.Length(min=1,max=50)],render_kw={'placeholder' : 'unit'})
     ep_scale = StringField(u'스케일', [validators.required()],render_kw={'type' : 'number','value' : '1.0','step' : "0.001" })
     ep_unit = StringField(u'단위', [validators.Length(min=1,max=50)],render_kw={'placeholder' : 'required'}) # validators.required(),
     ep_pr_host = StringField(u'호스트 정보', [validators.required(),validators.Length(min=1,max=50)],default='127.0.0.1')
@@ -46,7 +46,7 @@ class OB_ENDPOINT_FORM(Form):
     ep_hour = IntegerField(u'시간', [validators.NumberRange(min=0, max=24)],render_kw={'type' : 'number','value' : 0 })
     ep_day = IntegerField(label=u'일', validators=[validators.NumberRange(min=0, max=31)],render_kw={'type' : 'number','value' : 0 })
     ep_month = IntegerField(u'월', [validators.NumberRange(min=0, max=12)],render_kw={'type' : 'number','value' : 0 })
-    ep_count = IntegerField(u'Count', [validators.NumberRange(min=0, max=10000)],render_kw={'type' : 'number','value' : 0 })
+    ep_count = IntegerField(u'카운트', [validators.NumberRange(min=0, max=10000)],render_kw={'type' : 'number','value' : 0 })
 
 class OB_DEVTYPE_FORM(Form):
     dv_type = StringField(u'타입', [validators.required(),validators.Length(min=1,max=50)],render_kw={'style' : "text-transform:uppercase", 'placeholder' : 'required'})
