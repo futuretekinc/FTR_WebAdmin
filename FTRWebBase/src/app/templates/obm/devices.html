@@ -65,12 +65,14 @@ function fn_onAddNewEptype() {
 	var ep_type = $('#sel_ep_type').val();
 	var param = { 'dev_id' : dev_id, 'ep_type' : ep_type };
 	//console.log(JSON.stringify(param));
-	ftr_bootbox_confirm('엔드포인트 타입 ['+ep_type+']를 추가하시겠습니까?',function(){
-		$.postJSON(targetUrl, param, function(d){
-		}).done(function(d){
-			fn_onClickTableRow(dev_id);
-			bootbox.alert('추가되었습니다.!',function(){});
-		});
+	ftr_bootbox_confirm('엔드포인트 타입 ['+ep_type+']를 추가하시겠습니까?',function(answer){
+		if(answer) {
+			$.postJSON(targetUrl, param, function(d){
+			}).done(function(d){
+				fn_onClickTableRow(dev_id);
+				bootbox.alert('추가되었습니다.!',function(){});
+			});
+		}
 	});
 }
 
@@ -146,7 +148,6 @@ function fn_onDelete(dev_id) {
 		$form.submit();
 	}
 }
-
 
 
 /**
@@ -262,7 +263,10 @@ $(document).ready(function(){
 	
 	
 	$('#ep_delete').click(function(){
-		ftr_bootbox_confirm('해당 엔드포인트를 삭제하시겠습니까?',function(){
+		ftr_bootbox_confirm('해당 엔드포인트를 삭제하시겠습니까?',function(answer){
+			if(!answer) {
+				return;
+			}
 			// 엔도프인트 삭제
 			var dev_id = $('#dt_dev_id').text();
 			var targetUrl = '/obm/endpoints_delete';
@@ -278,7 +282,10 @@ $(document).ready(function(){
 		});		
 	});
 	$('#ep_update').click(function(){
-		ftr_bootbox_confirm('해당 엔드포인트를 수정하시겠습니까?',function(){
+		ftr_bootbox_confirm('해당 엔드포인트를 수정하시겠습니까?',function(answer){
+			if(!answer) {
+				return;
+			}
 			// 엔도프인트 수정
 			var dev_id = $('#dt_dev_id').text();
 			var targetUrl = '/obm/endpoints_update';
@@ -395,6 +402,16 @@ function fn_onSelectTab2() {
 }
 
 function fn_onSave() {
+	var $dev = $.trim($('#dev_name').val());
+	var $desc = $.trim($('#dev_info').val());
+	if ($dev.length == 0) {
+		bootbox.alert('디바이스 명을 입력하세요.!');
+		return;
+	}
+	if ($desc.length == 0) {
+		bootbox.alert('디바이스 설명을 입력하세요.!');
+		return;
+	}
 	var $form = $('#form_id');
 	$form.attr({'action' : '/obm/devices_save'});
 	$form.attr({'method' : 'POST'});

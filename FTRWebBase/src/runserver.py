@@ -27,11 +27,10 @@ def runGevent(app,port=80):
     http_server = WSGIServer(('',port),app)
     http_server.serve_forever()
 
-
 def runDebug(app):
     app.run(host='0.0.0.0', port=5000, debug=True)
 
 if __name__ == '__main__':
 #     runServer(app)
-#     runGevent(app,port=5000)
+#     runGevent(app,port=80)
     runDebug(app)
