@@ -35,8 +35,8 @@ function show_resource_table() {
 	var table_id = '.dataTables-'+target_name;
 	var url = '/obm/' + target_name ;
 	var columns = [
-		{'data' : 'res_id'} ,
-		{'data' : 'res_name'} ,
+		{'data' : 'rc_id'} ,
+		{'data' : 'rc_name'},
 	];
 	render_datatable(table_id, url, columns);
 }

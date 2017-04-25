@@ -6,6 +6,7 @@ from app import db, ma
 from app.obm.forms import * 
 from app.obm.models import *
 from app.obm.services import *
+from app.obm.services.gateway_service import ObGatewayHandler
 
 
 class OB_GATEWAY_VIEW(MethodView):
@@ -23,10 +24,10 @@ class OB_GATEWAY_SAVE(View):
     def dispatch_request(self):
         form = OB_GATEWAY_FORM(request.form)
         if form.validate():
-            gw = OB_GATEWAY()
-            gw.gw_name = str(form.gw_name.data)
-            db.session.add(gw)
-            db.session.commit()
-            flash('Thanks for registering')
-        return redirect('/obm/gateway')  
-    
+            ret, msg = ObGatewayHandler.do_save(form.data)
+            if ret is True:
+                return redirect('/obm/gateway')  
+            else:
+                app.logger.debug('Except - ',msg)
+                
+        return render_template('obm/gateway.html',form=form)  

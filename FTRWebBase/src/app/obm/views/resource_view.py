@@ -6,6 +6,7 @@ from app import db, ma
 from app.obm.forms import * 
 from app.obm.models import *
 from app.obm.services import *
+from app.obm.services.resource_service import ObResourceHandler
 
 class OB_RESOURCE_VIEW(MethodView):
     def get(self):
@@ -22,10 +23,10 @@ class OB_RESOURCE_SAVE(View):
     def dispatch_request(self):
         form = OB_RESOURCE_FORM(request.form)
         if form.validate():
-            resource = OB_RESOURCE()
-            resource.res_name = str(form.res_name.data)
-            db.session.add(resource)
-            db.session.commit()
-            flash('Thanks for registering')
-        return redirect('/obm/resources')  
-    
+            ret, msg = ObResourceHandler.do_save(form.data)
+            if ret is True:
+                return redirect('/obm/resources')  
+            else:
+                app.logger.debug('Except - ',msg)
+                
+        return render_template('obm/resources.html',form=form)      

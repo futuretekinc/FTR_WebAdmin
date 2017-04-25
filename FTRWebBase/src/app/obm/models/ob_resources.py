@@ -7,13 +7,23 @@ from sqlalchemy.orm import joinedload
     
 class OB_RESOURCE(db.Model):
     __tablename__ = "OB_RESOURCE"
-    res_id = db.Column(db.Integer,primary_key=True)
-    res_name = db.Column(db.NVARCHAR(50),nullable=False)
+    rc_id = db.Column(db.NVARCHAR(32),nullable=False,default=uuid_gen(),primary_key=True)
+    rc_name = db.Column(db.NVARCHAR(50),nullable=False)
+
+class OB_RESOURCE_MAP(db.Model):
+    __tablename__ = "OB_RESOURCE_MAP"
+    rc_id = db.Column(db.NVARCHAR(32),nullable=False,default=uuid_gen(),primary_key=True)
+    gw_id = db.Column(db.NVARCHAR(32),nullable=False,default=uuid_gen(),primary_key=True)
 
 class OB_GATEWAY(db.Model):
     __tablename__ = "OB_GATEWAY"
-    gw_id = db.Column(db.Integer,primary_key=True)
+    gw_id = db.Column(db.NVARCHAR(32),nullable=False,default=uuid_gen(),primary_key=True)
     gw_name = db.Column(db.NVARCHAR(50),nullable=False)
+    
+class OB_GATEWAY_MAP(db.Model):
+    __tablename__ = "OB_GATEWAY_MAP"
+    gw_id = db.Column(db.NVARCHAR(32),nullable=False,default=uuid_gen(),primary_key=True)
+    dev_id = db.Column(db.NVARCHAR(32),nullable=False,default=uuid_gen(),primary_key=True)
 
 class OB_DEVICE(db.Model):
     __tablename__ = "OB_DEVICE"

@@ -9,9 +9,9 @@ from tornado.web import FallbackHandler, RequestHandler, Application
 
 from app import app
 
-import logging
-logging.basicConfig()
-logging.getLogger('sqlalchemy.pool').setLevel(logging.DEBUG)
+#import logging
+#logging.basicConfig()
+#logging.getLogger('sqlalchemy.pool').setLevel(logging.DEBUG)
 
 def WSGIApplication(app):
     tr = WSGIContainer(app)
@@ -34,3 +34,6 @@ if __name__ == '__main__':
 #     runServer(app)
 #     runGevent(app,port=80)
     runDebug(app)
+    
+    
+    

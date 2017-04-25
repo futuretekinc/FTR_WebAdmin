@@ -8,7 +8,7 @@ from app.obm.models.ob_resources import OB_ENDPOINT_TYPE,OB_DEVICE_TYPE
 from app.cmm.models import CM_CODED
 
 class OB_RESOURCE_FORM(Form):
-    res_name = StringField(u'자원 명', [validators.required(),validators.Length(min=1,max=50)])
+    rc_name = StringField(u'자원 명', [validators.required(),validators.Length(min=1,max=50)])
     
 class OB_GATEWAY_FORM(Form):
     gw_name = StringField(u'게이트웨이 명', [validators.required(),validators.Length(min=1,max=50)])
