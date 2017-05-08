@@ -113,4 +113,7 @@ class CM_CODED(db.Model):
     updt_usid = db.Column(db.NVARCHAR(30),default="ADMIN",nullable=False)
     updt_date = db.Column(db.DATETIME,nullable=False,default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
 
-
+class CM_TIME(db.Model):
+    __tablename__ = "CM_TIME"
+    time_type = db.Column(db.NVARCHAR(10),primary_key=True)
+    time_key = db.Column(db.NVARCHAR(4),primary_key=True)
