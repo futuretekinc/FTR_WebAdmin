@@ -13,7 +13,7 @@ class ObDeviceHandler(object):
                 dev_id = param.get('dev_id')
             else:
                 dev_id = param
-            eps = db.session.query(OB_ENDPOINT).filter(OB_ENDPOINT.dev_id == dev_id).all()
+            eps = db.session.query(OB_ENDPOINT).join(OB_DEVICE_MAP, OB_DEVICE_MAP.ep_id == OB_ENDPOINT.ep_id).filter(OB_DEVICE_MAP.dev_id == dev_id).all()
             dev = db.session.query(OB_DEVICE).filter(OB_DEVICE.dev_id == dev_id).one()
             epts = db.session.query(OB_ENDPOINT_TYPE).all()
             dev = ob_device_single.dump(dev)

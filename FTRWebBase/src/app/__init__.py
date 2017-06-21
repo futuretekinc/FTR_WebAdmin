@@ -43,6 +43,7 @@ app, metadata, db, ma = init_app()
 from app.cmm.controllers import cmm
 from app.cmm.models import CM_CODEM, CM_CODED,FlaskSession
 from app.obm.models import *
+from app.evm.models import *
 from app.cmm.utils.sqlalchemy_session import SQLAlchemySessionInterface
 from app.cmm.services.menu_handler import find_menu
 

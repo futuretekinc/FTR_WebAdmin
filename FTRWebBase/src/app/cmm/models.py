@@ -6,7 +6,8 @@ from app import db,ma
 from datetime import datetime
 from app.cmm.utils import uuid_gen 
 from sqlalchemy.sql.expression import text
- 
+from sqlalchemy.types import CLOB,TEXT
+
 # Define a base model for other database tables to inherit
 class Base(db.Model):
     __abstract__ = True
@@ -27,6 +28,12 @@ class FlaskSession(db.Model):
         rec.value = value 
         return rec
                
+class CM_SYSTEM_LOG(db.Model):
+    __tablename__ = "CM_SYSTEM_LOG"
+    id = db.Column(db.Integer,primary_key=True)
+    log_type = db.Column(db.String(50),nullable=True)
+#     log = db.Column(CLOB) # Oracle
+    log = db.Column(TEXT)
 
 class CM_MENU_ITEM(db.Model):
     __tablename__ = "CM_MENU_ITEM"
@@ -117,3 +124,10 @@ class CM_TIME(db.Model):
     __tablename__ = "CM_TIME"
     time_type = db.Column(db.NVARCHAR(10),primary_key=True)
     time_key = db.Column(db.NVARCHAR(4),primary_key=True)
+
+class CM_KEEP_ALIVE(db.Model):
+    __tablename__ = "CM_KEEP_ALIVE"
+    did = db.Column(db.NVARCHAR(32),primary_key=True)
+    dtype = db.Column(db.NVARCHAR(30),primary_key=True)
+    expire_time = db.Column(db.DATETIME)
+    

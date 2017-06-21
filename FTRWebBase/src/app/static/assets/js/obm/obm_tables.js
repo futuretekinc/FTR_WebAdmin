@@ -73,8 +73,8 @@ function show_endpoint_table() {
 	var url = '/obm/' + target_name ; 
 	var columns = [
 		{'data' : 'ep_id'} ,
-		{'data' : 'dev_id'} ,
-		{'data' : 'ep_name'} ,
+		//{'data' : 'dev_id'} , 
+		{'data' : 'ep_name'} , 
 		{'data' : 'ep_scale'} ,
 		{'data' : 'ep_unit'} ,
 		{'data' : 'ep_pr_host'} ,
@@ -82,7 +82,7 @@ function show_endpoint_table() {
 		{'data' : 'ep_limit'} ,
 		{'data' : 'ep_hour'} ,
 		{'data' : 'ep_day'} ,
-		{'data' : 'ep_month'} ,
+		{'data' : 'ep_month'} , 
 		{'data' : 'ep_count'} ,
 	];
 	render_datatable(table_id, url, columns);   	

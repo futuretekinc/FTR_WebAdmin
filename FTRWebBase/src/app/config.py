@@ -18,6 +18,8 @@ SQLITE3 = "sqlite:///D:/tmp/single_db.db"
 AZURE_APP_DB = "mssql+pyodbc://devweb:Qvbcuxpr#123456@ftiotdb1.database.windows.net/appdb?driver=ODBC+Driver+13+for+SQL+Server"
 MYSQL_DB='mysql+pymysql://root:qwer1234@localhost/ftr_app_db?charset=utf8'
 MYSQL_OPER='mysql+pymysql://root:4rnekd9wkd@ftr-app.japanwest.cloudapp.azure.com/ftr_app_db?charset=utf8'
+# ORACLE_TEST="oracle+cx_oracle://HMUSER:HMUSER@hmtidc.iptime.org/JARG"
+ORACLE_TEST="oracle+cx_oracle://HMUSER:HMUSER@hmtidc.iptime.org/JARG"
 #SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'app.db')
 SQLALCHEMY_DATABASE_URI = MYSQL_OPER
 

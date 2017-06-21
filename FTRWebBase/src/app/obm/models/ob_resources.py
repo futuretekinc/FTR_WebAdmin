@@ -9,6 +9,7 @@ class OB_RESOURCE(db.Model):
     __tablename__ = "OB_RESOURCE"
     rc_id = db.Column(db.NVARCHAR(32),nullable=False,default=uuid_gen(),primary_key=True)
     rc_name = db.Column(db.NVARCHAR(50),nullable=False)
+    create_dt = db.Column(db.DATETIME,nullable=False,default=db.func.current_timestamp())
 
 class OB_RESOURCE_MAP(db.Model):
     __tablename__ = "OB_RESOURCE_MAP"
@@ -19,6 +20,12 @@ class OB_GATEWAY(db.Model):
     __tablename__ = "OB_GATEWAY"
     gw_id = db.Column(db.NVARCHAR(32),nullable=False,default=uuid_gen(),primary_key=True)
     gw_name = db.Column(db.NVARCHAR(50),nullable=False)
+    gw_type = db.Column(db.NVARCHAR(50),nullable=False)
+    gw_location = db.Column(db.NVARCHAR(50),nullable=False)
+#     gw_type = db.Column(db.NVARCHAR(50),nullable=True)
+#     gw_location = db.Column(db.NAVARCHAR(50),nullable=True)
+#     
+    create_dt = db.Column(db.DATETIME,nullable=False,default=db.func.current_timestamp())
     
 class OB_GATEWAY_MAP(db.Model):
     __tablename__ = "OB_GATEWAY_MAP"
@@ -29,14 +36,20 @@ class OB_DEVICE(db.Model):
     __tablename__ = "OB_DEVICE"
     dev_id = db.Column(db.NVARCHAR(32),nullable=False,default=uuid_gen(),primary_key=True)
     dev_name = db.Column(db.NVARCHAR(50),nullable=False)
+    dev_location = db.Column(db.NVARCHAR(50))
     dev_type = db.Column(db.NVARCHAR(50),nullable=False)
     dev_inst = db.Column(db.DATE)
     dev_info = db.Column(db.NVARCHAR(200))
     
+class OB_DEVICE_MAP(db.Model):
+    __tablename__ = "OB_DEVICE_MAP"
+    dev_id = db.Column(db.NVARCHAR(32),nullable=False,default=uuid_gen(),primary_key=True)
+    ep_id = db.Column(db.NVARCHAR(32),nullable=False,default=uuid_gen(),primary_key=True) 
+
 class OB_ENDPOINT(db.Model):
     __tablename__ = "OB_ENDPOINT"
     ep_id = db.Column(db.NVARCHAR(32),nullable=False,default=uuid_gen(),primary_key=True)
-    dev_id = db.Column(db.NVARCHAR(32),nullable=False,primary_key=True)
+#     dev_id = db.Column(db.NVARCHAR(32),nullable=False,primary_key=True)
     ep_type = db.Column(db.NVARCHAR(50),nullable=False,primary_key=True)
     ep_name = db.Column(db.NVARCHAR(50),nullable=False)
     ep_scale = db.Column(db.Numeric(precision=15,scale=3,asdecimal=False),default=1.0)
