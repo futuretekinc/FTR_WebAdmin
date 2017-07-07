@@ -1,0 +1,95 @@
+<!-- extend base layout -->
+{% extends "layout/base.html" %} 
+
+{% block body_type %} class="gray-bg" {% endblock %} 
+
+{% macro render_field(field) %}
+  <div class="form-group">
+  	{{ field(**kwargs)|safe }}
+  </div>
+  {% if field.errors %}
+    {% for error in field.errors %}
+      <span class="text-danger">{{ error }}</span>
+    {% endfor %}
+  {% endif %}
+{% endmacro %}
+{% macro render_field2(field) %}
+  	{{ field(**kwargs)|safe }}
+  	  {% if field.errors %}
+    {% for error in field.errors %}
+      <script>alert('{{ error }}');</script>
+    {% endfor %}
+  {% endif %}
+{% endmacro %}
+<!-- SCRIPTS -->
+{% block scripts %}
+{{super()}}
+<!-- iCheck 
+<script src="{{url_for('static',filename='js/plugins/iCheck/icheck.min.js')}}"></script>
+-->
+
+<script>
+/* $(document).ready(function(){
+   $('.i-checks').iCheck({
+      checkboxClass: 'icheckbox_square-green',
+      radioClass: 'iradio_square-green',
+   });
+}); */
+$(document).ready(function(){
+	$('#email').focusout(function(){
+		$email = $(this);
+		var email = $email.val();
+		$.postJSON('/cmm/account_check', {'email' : email}, function(d) {
+			if(d['data']) {
+				alert('이미 존재하는 계정입니다.');
+				$email.val('');
+				$email.focus();
+			}
+		});
+	});
+});
+</script>
+
+{% endblock %}
+<!-- SCRIPTS -->
+
+
+{% block content %}
+<div class="middle-box text-center loginscreen   animated fadeInDown">
+	<div>
+		<div>
+			<h1 class="logo-name">IoT</h1>
+		</div>
+		<h3>Register to FTM</h3>
+		<p>Create account to see it in action.</p>
+		<form class="m-t" role="form" name="form" action="{{url_for('cmm.account')}}" method="POST">
+			{{ render_field(form.email) }}
+			{{ render_field(form.username) }} 
+			{{ render_field(form.password) }} 
+			{{ render_field(form.confirm) }}
+<!-- 			<div class="form-group">
+				<input type="text" class="form-control" placeholder="Name" required="">
+			</div>
+			<div class="form-group">
+				<input type="email" class="form-control" placeholder="Email" required="">
+			</div>
+			<div class="form-group">
+				<input type="password" class="form-control" placeholder="Password" required="">
+			</div> -->
+			<button type="submit" class="btn btn-primary block full-width m-b">Register</button>
+
+			<p class="text-muted text-center">
+				<small>Already have an account?</small>
+			</p>
+			<a class="btn btn-sm btn-white btn-block" href="/login">Login</a>
+			
+		</form>
+		<p class="m-t">
+			<small>경기도 성남시 중원구 상대원동 442-2 한라시그마밸리 208호 주식회사 퓨쳐텍 &copy;
+				2017</small>
+		</p>
+	</div>
+</div>
+
+
+{% endblock %}
