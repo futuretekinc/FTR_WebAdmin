@@ -1,0 +1,9 @@
+{% from "macro/mc_form.html" import render_field, render_form,render_form_noSubmit, render_checkbox_field,render_date_field %}
+
+<div class="row">
+	{% call render_form_noSubmit(form, form_id='f_device_edit') %}
+	<div class="col-xs-6">{{ render_field(form.dev_id) }}</div>
+	<div class="col-xs-6">{{ render_field(form.dev_name) }}</div>	
+	<div class="col-xs-6">{{ render_field(form.dev_location) }}</div>
+	{% endcall %}
+</div>

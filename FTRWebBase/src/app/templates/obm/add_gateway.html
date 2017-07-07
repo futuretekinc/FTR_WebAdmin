@@ -1,0 +1,79 @@
+{% extends "layout/main.html" %}
+{% from "macro/mc_form.html" import render_field,render_form_noSubmit, render_form, render_checkbox_field %}
+{% from "macro/mc_header.html" import css_html_table,js_html_table %}
+{% from "obm/obm_tables.html" import show_gateway_table,foo_table %}
+
+<!-- CSS -->
+{% block styles %}
+{{super()}}
+{{css_html_table()}}
+{% endblock %}
+<!-- CSS -->
+
+<!-- SCRIPTS -->
+{% block scripts %}
+{{super()}}
+{{js_html_table()}}  
+<script src="{{url_for('static',filename='assets/js/obm/obm_tables.js')}}"></script>
+  
+<script type="text/javascript">
+$(document).ready(function(){
+	fn_openMenu('M2_12_32');
+});
+
+</script>
+
+{% endblock %}
+<!-- SCRIPTS -->
+
+<!-- title -->
+{% block title %}{{title|safe}}{% endblock %}
+
+<!-- header -->
+{% block page_header %}
+{{ render_breadscrumb(title=title,sub_1="게이트웨이관리",sub_2="게이트웨이등록") }}
+{% endblock %}
+
+<!-- main block -->
+{% block page_main %}
+{{super()}}
+<!-- BEGIN-MAIN -->
+<div class="row">
+	<div class="col-lg-6">
+		<div class="ibox-content m-b-sm border-bottom">
+			<div class="row table-responsive">
+			<div class="col-md-12">
+				<!-- <span class="list-group">
+					<h3 class="list-group-item-heading">GATEWAY 등록</h3>
+					<p class="list-group-item-text">게이트웨이를 등록합니다.</p>
+				</span> -->
+					{% call render_form_noSubmit(form, action_url='/obm/add_gateway', action_text='등록', class_='form') %}
+				<div class="col-md-12">
+						{{ render_field(form.gw_id) }}
+				</div>						
+				
+				<!-- <div class="col-md-12">
+				&nbsp;
+				</div>						
+				<div class="col-md-12">
+						{# render_checkbox_field(form.delete_enable) #}
+				</div>		
+				<div class="col-md-12">
+						{# render_checkbox_field(form.update_enable) #}
+				</div>	 -->				
+				<div class="col-md-12">
+					<div class="text-right">
+						<button type="submit" class="btn btn-primary">등록</button>
+					</div>				
+				</div>						
+					{% endcall %}		
+			</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- END-MAIN -->
+
+{% endblock page_main %}
+
+

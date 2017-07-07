@@ -1,0 +1,100 @@
+{% extends "layout/main.html" %}
+{% from "macro/mc_form.html" import render_field,render_form_noSubmit, render_form, render_checkbox_field %}
+{% from "macro/mc_header.html" import css_html_table,js_html_table %}
+
+{% macro show_keep_alive_table() -%}
+<table class="table table-striped table-bordered table-hover dataTables-keep_alive">
+	<colgroup>
+		<col width="25%" />
+		<col width="25%" />
+		<col width="25%" />
+		<col width="25%" />
+	</colgroup>
+	<thead>
+		<tr>
+			<th class="text-center">게이트웨이</th>
+			<th class="text-center">디바이스</th>
+			<th class="text-center">엔드포인트</th>
+			<th class="text-center">연동상태</th>
+			<!-- <th class="text-center">Last update</th> -->
+		</tr>
+	</thead>
+	<tbody class="table_view">
+	</tbody>
+</table>
+{%- endmacro %}
+
+<!-- CSS -->
+{% block styles %}
+{{super()}}
+{{css_html_table()}}
+{% endblock %}
+<!-- CSS -->
+
+<!-- SCRIPTS -->
+{% block scripts %}
+{{super()}}
+{{js_html_table()}}  
+<script src="{{url_for('static',filename='assets/js/obm/obm_tables.js')}}"></script>
+  
+<script type="text/javascript">
+$(document).ready(function(){
+	fn_openMenu('M1_20');
+});
+
+
+$(document).ready(function(){
+	show_keep_alive_table();
+	//fn_on_update_select_table_row();
+});
+
+
+function fn_on_update_select_table_row() {
+	$(document).on('click','.dataTables-keep_alive .table_view tr',function(){
+	
+		/** Click Device List */
+		var $this = $(this);
+		
+		function _text(obj, index) {
+			return $(obj).find('td:eq('+index+')').text();
+		}
+		
+		console.log(gw_id);
+	});
+}
+
+</script>
+
+{% endblock %}
+<!-- SCRIPTS -->
+
+<!-- title -->
+{% block title %}{{title|safe}}{% endblock %}
+
+<!-- header -->
+{% block page_header %}
+{{ render_breadscrumb(title=title,sub_1="실시간모니터링",sub_2="장치상태감시") }}
+{% endblock %}
+
+<!-- main block -->
+{% block page_main %}
+{{super()}}
+<!-- BEGIN-MAIN -->
+
+<div class="row">
+	<div class="col-lg-8">
+		<div class="ibox-content m-b-sm border-bottom">
+			<div class="row table-responsive">
+				<div class="col-md-12">
+					{{ show_keep_alive_table() }}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- END-MAIN -->
+
+{% endblock page_main %}
+
+
