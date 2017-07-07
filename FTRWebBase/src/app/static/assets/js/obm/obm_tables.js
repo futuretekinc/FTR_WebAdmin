@@ -24,12 +24,46 @@ function render_datatable_no_search(table_id, url, columns) {
 		, 'ajax' : {
 			'url' : url ,
 			'type' : 'POST' ,
+			
+		}
+		, 'columns' : columns
+		, 'columnDefs' : [ {'className' : 'text-center', 'targets' : 'all'} ]
+	});    	
+}
+function render_datatable_no_search_data(table_id, url, columns,data) {
+	console.log('param=======>' + data)
+	$(table_id).DataTable({
+		'processing' : true 
+		, 'bLengthChange' : false
+		, 'destroy' : true 
+		/* hide searhbar */
+		, 'bFilter' : false
+		, 'bInfo' : false
+		/* hide searhbar */
+		, 'ajax' : {
+			'url' : url ,
+			'type' : 'POST' ,
+			'data' : data
 		}
 		, 'columns' : columns
 		, 'columnDefs' : [ {'className' : 'text-center', 'targets' : 'all'} ]
 	});    	
 }
 
+function show_keep_alive_table() {
+	var target_name = 'keep_alive'
+	var table_id = '.dataTables-'+target_name;
+	var url = '/rtm/' + target_name ;
+	var columns = [
+		{'data' : 'gw_name'     } ,
+		{'data' : 'dev_name'    } ,
+		{'data' : 'ep_name'     } ,
+		{'data' : 'status'      } ,
+		//{'data' : 'expire_time' } ,
+	];
+	
+	render_datatable_no_search(table_id, url, columns);
+}
 function show_resource_table() {
 	var target_name = 'resources'
 	var table_id = '.dataTables-'+target_name;
@@ -48,11 +82,14 @@ function show_gateway_table() {
 	var columns = [
 		{'data' : 'gw_id'} ,
 		{'data' : 'gw_name'} ,
+		{'data' : 'gw_location'} ,
+		{'data' : 'register'} ,
+		{'data' : 'last_update'} , 
 	];
-	render_datatable(table_id, url, columns);
+	render_datatable_no_search(table_id, url, columns);
 }
 
-function show_device_table() {
+function show_device_table(gw_id) {
 	var target_name = 'devices'
 	var table_id = '.dataTables-'+target_name;
 	var url = '/obm/' + target_name ; 
@@ -60,12 +97,27 @@ function show_device_table() {
 		{'data' : 'dev_id'} ,
 		{'data' : 'dev_name'} ,
 		{'data' : 'dev_type'} ,
-		{'data' : 'dev_info'} ,
-		{'data' : 'dev_inst'} ,
+		{'data' : 'dev_location'} ,
+		{'data' : 'update'} ,
 		{'data' : 'delete'} ,
 	];
-	render_datatable_no_search(table_id, url, columns);
+	render_datatable_no_search_data(table_id, url, columns,{ 'gw_id' : gw_id } );
 }
+
+//function show_device_table() {
+//	var target_name = 'devices'
+//	var table_id = '.dataTables-'+target_name;
+//	var url = '/obm/' + target_name ; 
+//	var columns = [
+//		{'data' : 'dev_id'} ,
+//		{'data' : 'dev_name'} ,
+//		{'data' : 'dev_type'} ,
+//		{'data' : 'dev_location'} ,
+//		{'data' : 'update'} ,
+//		{'data' : 'delete'} ,
+//	];
+//	render_datatable_no_search(table_id, url, columns);
+//}
 
 function show_endpoint_table() {
 	var target_name = 'endpoints'

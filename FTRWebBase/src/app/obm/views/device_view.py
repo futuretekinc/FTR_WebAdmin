@@ -6,6 +6,8 @@ from app import db, ma
 from app.obm.forms import *  
 from app.obm.models import *
 from app.obm.services import *
+from flask_login.utils import current_user
+from app.obm.forms.obm_forms import USER_GATEWAY_FROM
 
 '''
 ------------------------------------------------------------------------------------
@@ -17,9 +19,18 @@ class OB_DEVICE_VIEW(MethodView):
     def get(self):
         form = OB_DEVICE_FORM(request.form)
         epForm = OB_ENDPOINT_FORM(request.form)
-        return render_template('obm/devices.html',form=form,epForm=epForm)
+        email = current_user.id
+        usrForm = USER_GATEWAY_FROM(request.form)
+        usrForm.update_field(email)
+        return render_template('obm/devices.html',form=form,epForm=epForm,usrForm=usrForm)
     def post(self):
-        return ObDeviceHandler.do_read()
+        try:
+            service = MD_OB_DEVICE()
+            gw_id = request.form.get('gw_id')
+            return service.get_entry(gw_id)
+        except Exception as e:
+            print('OB_DEVICE_VIEW-ERROR-',str(e))
+            return fn_jsonify({})
 
 class OB_DEVICE_DETAIL_VIEW(MethodView):
     def post(self):

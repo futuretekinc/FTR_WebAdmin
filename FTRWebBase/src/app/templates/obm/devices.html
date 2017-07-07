@@ -58,24 +58,6 @@ function fn_loadEpType(eptypes) {
 }
 
 
-
-function fn_onAddNewEptype() {
-	var targetUrl = '/obm/devices_save_ep';
-	var dev_id = $('#dt_dev_id').text();
-	var ep_type = $('#sel_ep_type').val();
-	var param = { 'dev_id' : dev_id, 'ep_type' : ep_type };
-	//console.log(JSON.stringify(param));
-	ftr_bootbox_confirm('엔드포인트 타입 ['+ep_type+']를 추가하시겠습니까?',function(answer){
-		if(answer) {
-			$.postJSON(targetUrl, param, function(d){
-			}).done(function(d){
-				fn_onClickTableRow(dev_id);
-				bootbox.alert('추가되었습니다.!',function(){});
-			});
-		}
-	});
-}
-
 function fn_openDeviceDetailTab() {
 	/**
 	1) hidden_dev_id로 디바이스 정보 검색 
@@ -213,11 +195,18 @@ function fn_onClickTableRow(dev_id) {
 $(document).ready(function(){
 	
 	// show device table
-	 show_device_table();
+	var gw_id = $("#gateways option:eq(0)").val();
+	 show_device_table(gw_id);
 	 fn_onClickTableRow('');
 	 
+	 
+	 $('#gateways').change(function(){
+		 $this = $(this)
+		 var gw_id = $this.val();
+		 show_device_table(gw_id);
+	 });
+	 
 	$('#endpoint_mod').click(fn_onClickModifyEndpoint);
-	$('#add_new_eptype').click(fn_onAddNewEptype);
 	
 	$(document).on('click','.ftr_table_delete',function(){
 		var key = $(this).attr('key');
@@ -232,6 +221,10 @@ $(document).ready(function(){
 		});
 	});
 	
+	$(document).on('click','.ftr_table_update',function(){
+		var key = $(this).attr('key');
+		fn_device_edit_pop(key);
+	});
 	
 	$(document).on('click','.dataTables-devices .table_view tr',function(){
 
@@ -422,9 +415,6 @@ $(document).ready(function(){
 	$.openMenu('M2_13_28');
 	//fn_onSelectTab2();
 
-	// on_new_device
-	$('#device_add').click(fn_onClickNewDevice);
-
 	//form_save
 	$('#form_save').click(fn_onSave);
 
@@ -438,7 +428,51 @@ $(document).ready(function(){
 
 
 </script>
+<!-- MODAL -->
+<script type="text/javascript">
+function fn_on_device_modify() {
+	var $form = $('#f_device_edit');
+	$form.submit();
+}
 
+function fn_device_edit_pop(dev_id) {
+
+	var url = '/obm/device_edit/' + dev_id;
+	$('#device_edit-container').load(url);
+	$('#f_device_edit').find('input[name=dev_id]').val(dev_id);
+	var container = $('#device_edit-container').html() || '';
+	
+	if (container == '') {
+		return;
+	} else {
+	}
+	
+	var box = bootbox.dialog({
+	        show: false,
+	        message: container,
+	        title: "디바이스 정보 수정",
+	        buttons: {
+	          ok: {
+	            label: "수정",
+	            className: "btn-primary",
+	            callback: function() {
+	              console.log('OK Button');
+	            }
+	          },
+	          cancel: {
+	            label: "Cancel",
+	            className: "btn-default"
+	          }
+	        }
+	      });
+	      box.on("shown.bs.modal", function() {
+	         $('#example').DataTable(); 
+	      });
+	box.modal('show'); 
+}
+
+</script>
+<!-- MODAL -->
 {% endblock %}
 <!-- SCRIPTS -->
 
@@ -456,6 +490,7 @@ $(document).ready(function(){
 <!-- BEGIN-MAIN -->
 <div id="hidden_dev_id"></div>
 
+
 <div class="row">
 	<div class="col-lg-12">
 		<div class="tabs-container">
@@ -465,10 +500,10 @@ $(document).ready(function(){
 					aria-expanded="true"> <i class="fa fa-list" aria-hidden="true"></i>
 						디바이스목록
 				</a></li>
-				<li id='tab2' class=""><a data-toggle="tab" href="#tab-2"
+<!-- 				<li id='tab2' class=""><a data-toggle="tab" href="#tab-2"
 					aria-expanded="false"> <i class="fa fa-microchip"
 						aria-hidden="true"></i> 디바이스추가
-				</a></li>
+				</a></li> -->
 				<li id='tab3' class=""><a data-toggle="tab" href="#tab-3"
 					aria-expanded="false"> <i class="fa fa-thermometer-half"
 						aria-hidden="true"></i> 엔드포인트 설정
@@ -478,11 +513,9 @@ $(document).ready(function(){
 				<div id="tab-1" class="tab-pane active">
 					<div class="panel-body">
 						<!-- TABLE -->
-						<div class="col-md-12">
-							<div class="text-right ">
-								<button id="device_add" class='btn btn-success'>추가</button>
-							</div>						
-						</div>
+							<div class="col-md-4 col-md-offset-8">
+								{{ render_field(usrForm.gateways) }}
+							</div>
 						<div class="col-md-12 table-responsive">
 							{{ show_device_table() }}
 						</div>
@@ -504,40 +537,6 @@ $(document).ready(function(){
 					</div>
 				</div>
 			<!-- TAB1 -->
-			<!-- TAB2 -->
-			<div id="tab-2" class="tab-pane">
-				<div class="panel-body">
-						<!-- Table -->
-						<div class="col-lg-12">
-						<p class="m-sm"></p>
-						{% call render_form_noSubmit(form, form_id='form_id') %}
-							<div class="col-md-4">{{ render_field(form.dev_name) }}</div>
-							<div class="col-md-4">{{ render_field(form.dev_type) }}</div>
-							<div class="col-md-4">{{ render_field(form.dev_inst) }}</div>
-							<div class="col-md-12">{{ render_field(form.dev_info) }}</div>
-						{% endcall %}
-						<div class="col-md-12">
-							<div class="text-right">
-								<button id="form_save" class='btn btn-success'>저장</button>
-								<hr class="hr-line-dashed">
-							</div>
-						</div>
-						<!-- Table -->
-						<H4><ol class="breadcrumb">
-							<li><i class="fa fa-thermometer-half" aria-hidden="true"></i> <a>[ <font color="red"><span id="id_dev_type"></span></font> ] 디바이스</a></li>
-							<li class="active"><a>엔드포인트 타입</a></li>
-							</ol>
-						</h4>
-						<div class="row table-responsive">
-							<div class="col-lg-12">
-								{{ show_eptype_table_readonly() }}
-							</div>
-						</div>						
-						</div>
-						<!-- Table -->
-				</div>
-			</div>
-			<!-- TAB2 -->
 			<!-- TAB3 -->
 			<div id="tab-3" class="tab-pane">
 				<div class="panel-body">
@@ -574,21 +573,6 @@ $(document).ready(function(){
 						<div class="col-lg-12">
 							<h4><i class="fa fa-thermometer-half"></i> 엔드포인트 관리</h4>
 							<div class="row m-t">
-								<div class="col-md-12 m-b">
-									<div class="col-xs-4">
-										<div class="input-group">
-											<select class="form-control" id="sel_ep_type">
-												<option></option>
-											</select>
-											<span class="input-group-btn"> 
-												<button type="button" id="add_new_eptype" class="btn btn-info">타입추가</button> 
-                                        	</span>
-                                        </div>										
-									</div>
-								</div>
-								<div class="col-md-12">
-									<hr class="hr">
-								</div>
 								<div class="col-md-12">
 									{% call render_form_noSubmit(epForm, form_id='epForm_id') %}
 									<div class="row" id="ep_mod">
@@ -646,30 +630,10 @@ $(document).ready(function(){
 	<!-- MARGIN -->
 	
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+{% macro model_device_edit_container() %}
+<div id="device_edit-container" style="display:none"></div>
+{%- endmacro %}
+{{ model_device_edit_container()}}
 <!-- END-MAIN -->
 
 {% endblock page_main %}

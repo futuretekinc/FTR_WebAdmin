@@ -1,18 +1,52 @@
 #-*- conding: utf-8 -*-
-from app import db
 from datetime import datetime
-from flask_wtf import Form
-from wtforms import BooleanField, StringField, PasswordField, validators, IntegerField,SelectField,TextAreaField,DateField
+
+from flask_wtf import FlaskForm as Form
+from wtforms import BooleanField, StringField, PasswordField, validators, IntegerField, SelectField, TextAreaField, DateField, HiddenField, DateTimeField
 from wtforms.validators import DataRequired, Required
-from app.obm.models.ob_resources import OB_ENDPOINT_TYPE,OB_DEVICE_TYPE
+
+from app import db
 from app.cmm.models import CM_CODED
+from app.obm.models.ob_resources import OB_ENDPOINT_TYPE, OB_DEVICE_TYPE, \
+    OB_GATEWAY
+from app.cmm.services.service import MD_CM_USER, MD_TIME_TYPE
+
 
 class OB_RESOURCE_FORM(Form):
     rc_name = StringField(u'자원 명', [validators.required(),validators.Length(min=1,max=50)])
     
 class OB_GATEWAY_FORM(Form):
-    gw_name = StringField(u'게이트웨이 명', [validators.required(),validators.Length(min=1,max=50)])
+    hd_gw_id = HiddenField(u'gw_id')
+    gw_name = StringField(u'게이트웨이 명', [validators.required(),validators.Length(min=1,max=50)],render_kw={'placeholder' : 'Gateway Name','required':'required'})
+    gw_location = StringField(u'설치위치', [validators.required(),validators.Length(min=1,max=50)],render_kw={'placeholder' : 'Gateway Location Info'})
+    last_update = DateTimeField('last_update', format="%Y-%m-%dT%H:%M:%S",default=datetime.today,validators=[])
+    
+#     delete_enable = BooleanField('삭제권한', [validators.DataRequired()])
+#     update_enable = BooleanField('수정권한', [validators.DataRequired()])
 
+class OB_GATEWAY_SAVE_FORM(Form):
+    gw_id = StringField(u'게이트웨이 ID', [validators.required(),validators.Length(min=1,max=32)],render_kw={'placeholder' : 'Gateway Id','required':'required'})
+    last_update = DateTimeField('last_update', format="%Y-%m-%dT%H:%M:%S",default=datetime.today,validators=[])
+#     gw_name = StringField(u'게이트웨이 명', [validators.required(),validators.Length(min=1,max=50)],render_kw={'placeholder' : 'Gateway Name','required':'required'})
+#     gw_location = StringField(u'설치위치', [validators.required(),validators.Length(min=1,max=50)],render_kw={'placeholder' : 'Gateway Location Info'})
+#     last_update = DateTimeField('last_update', format="%Y-%m-%dT%H:%M:%S",default=datetime.today,validators=[])
+#     delete_enable = BooleanField('게이트웨이에서 정보 삭제 금지', [validators.DataRequired()])
+#     update_enable = BooleanField('게이트웨이에서 정보 수정 금지', [validators.DataRequired()])
+    def __init__(self,*args,**kwargs):
+        Form.__init__(self,*args,**kwargs)
+        self.dvtype = None
+    
+    def validate(self):
+        rv = Form.validate(self)
+        dvType = db.session.query(OB_GATEWAY) \
+                    .filter(OB_GATEWAY.gw_id == str(self.gw_id.data)) \
+                    .first()
+        if dvType is not None:
+            self.gw_id.errors.append('이미 존재하는 게이트웨이입니다.')
+            return False
+        self.gw_id = dvType
+        return rv
+      
 class OB_DEVICE_FORM(Form):
     dev_name = StringField(u'디바이스 명', [validators.required(),validators.Length(min=1,max=50)],render_kw={'placeholder' : u'디바이스 명'})
     dev_type = SelectField(u'디바이스 타입',choices=[('','NONE')],render_kw={'style' : "text-transform:uppercase", 'placeholder' : 'required'})
@@ -31,8 +65,37 @@ class OB_DEVICE_FORM(Form):
         return buf    
     
     
-    
-    
+class USER_GATEWAY_FROM(Form):    
+    gateways = SelectField(u'게이트웨이', choices=[ ('-', '-' )],validators=[validators.optional()])
+    timetypes = SelectField(u'시간간격', choices=[ ('-', '-' )],validators=[validators.optional()])
+    ep_type = StringField(u'엔드포인트타입',validators=[validators.optional()])
+    target_date = StringField(u'지정일',validators=[validators.optional()])
+    def __init__(self,*args,**kwargs):
+        Form.__init__(self,*args,**kwargs)
+    def update_field(self,email):
+        self.gateways.choices = self.gateway_choice(email)
+        self.timetypes.choices = self.timetype_choice()
+    def gateway_choice(self,email):
+        cmUser = MD_CM_USER()
+        gws = cmUser.get_gw_list(email)
+        buf = []
+        for gw in gws:
+            buf.append((gw.gw_id, gw.gw_name))
+        return buf
+    def timetype_choice(self):
+        tmType = MD_TIME_TYPE()
+        return tmType.get_choice_entry()
+
+class DisabledTextField(StringField):
+  def __call__(self, *args, **kwargs):
+    kwargs.setdefault('disabled', True)
+    return super(DisabledTextField, self).__call__(*args, **kwargs) 
+   
+class OB_DEVICE_EDIT_FORM(Form):
+    dev_id = DisabledTextField(u'디바이스 ID', [validators.required(),validators.Length(min=1,max=50)],render_kw={'placeholder' : u'디바이스 ID'})
+    dev_name = StringField(u'디바이스 명', [validators.required(),validators.Length(min=1,max=50)],render_kw={'placeholder' : u'디바이스 명'})
+    dev_location = StringField(u'설치위치', [validators.required(),validators.Length(min=1,max=50)],render_kw={'placeholder' : u'설치위치'})
+
 class OB_ENDPOINT_FORM(Form):
     ep_id = StringField(u'엔드포인트id',[validators.required(), validators.Length(min=32,max=32)]) 
     dev_id = StringField(u'디바이스id',[validators.required(), validators.Length(min=32,max=32)]) 

@@ -17,3 +17,4 @@ class MicroBlogModelView(ModelView):
 admin.add_view(MicroBlogModelView(CM_MENU_ITEM, db.session))
 
 app.run()
+

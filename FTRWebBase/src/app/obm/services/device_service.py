@@ -1,7 +1,9 @@
 # -*- coding : utf-8 -*-
+import json
 from app import app, db
 from app.obm.models import *
 from app.cmm.utils.decimal_jsonizer import fn_jsonify
+import pandas as pd
 
 class ObDeviceHandler(object):
     
@@ -95,6 +97,7 @@ class ObDeviceHandler(object):
             result = ob_device_many.dump(device)
             for row in result.data:
                 row['delete'] = '<span class="ftr_table_delete" key="{dev_id}"><i class="fa fa-trash-o"></i></span>'.format(dev_id=row.get('dev_id'))
+                row['update'] = '<span class="ftr_table_delete" key="{dev_id}"><i class="fa fa-edit"></i></span>'.format(dev_id=row.get('dev_id'))
             return fn_jsonify({ 'data' : result.data }) 
         except Exception as e:
             app.logger.error('Except - ',str(e))
@@ -284,3 +287,79 @@ class ObDeviceTypeHandler(object):
             
         return (False, err_msg)
 
+
+
+class MD_OB_DEVICE(object):
+    def get_entry(self,gw_id):
+        err_msg = ''
+        try:
+            device = db.session.query(OB_DEVICE) \
+                        .join(OB_GATEWAY_MAP,OB_GATEWAY_MAP.dev_id == OB_DEVICE.dev_id) \
+                        .filter(OB_GATEWAY_MAP.gw_id == gw_id).all()
+            result = ob_device_many.dump(device)
+            for row in result.data:
+                row['delete'] = '<span class="ftr_table_delete" key="{dev_id}"><i class="fa fa-trash-o"></i></span>'.format(dev_id=row.get('dev_id'))
+                row['update'] = '<span class="ftr_table_update" key="{dev_id}"><i class="fa fa-edit"></i></span>'.format(dev_id=row.get('dev_id'))
+            return fn_jsonify({ 'data' : result.data }) 
+        except Exception as e:
+            app.logger.error('Except - ',str(e))
+
+        return fn_jsonify({'data' : []})
+    def get_device(self,dev_id):
+        dev = db.session.query(OB_DEVICE).filter(OB_DEVICE.dev_id == dev_id).one()
+        return dev
+
+    def update_edit_form(self,form, dev_id):
+        try:
+            if dev_id is not None and form is not None:
+                dev = self.get_device(dev_id.strip())
+                form.dev_id.data = dev.dev_id
+                form.dev_name.data = dev.dev_name
+                form.dev_location.data = dev.dev_location
+        except Exception as e:
+            print("ERROR>>",str(e))
+            return
+    
+    def update_device(self,form, dev_id):
+        try:
+            if dev_id is not None:
+                dev = self.get_device(dev_id.strip())
+                dev.dev_name = form.dev_name.data
+                dev.dev_location = form.dev_location.data
+                db.session.commit()
+        except Exception as e:
+            print("ERROR>>",str(e))
+            db.session.rollback()
+
+class MD_KEEP_ALIVE():
+    def get_status(self,email):
+        query = self.get_status_query(email)
+        df = pd.read_sql_query(query,con=db.engine, parse_dates={ 'expire_time' : '%Y-%m-%d %H:%M:%S'})
+        df = df.fillna('')
+        data = json.loads(df.to_json(orient='records'))
+        return fn_jsonify({ 'data' : data })
+    
+    def get_status_query(self,email):
+        return '''
+SELECT 
+    (select gw_name from OB_GATEWAY where gw_id = a.gw_id) gw_name,
+    (select dev_name from OB_DEVICE where dev_id = b.dev_id) dev_name,
+    (select ep_name from OB_ENDPOINT where ep_id = b.ep_id) ep_name,
+    CASE when ISNULL(c.expire_time) OR c.expire_time < NOW() then 'OFF'
+    ELSE 'ON' END status
+    , c.expire_time
+FROM
+    OB_GATEWAY_MAP a
+        INNER JOIN
+    OB_DEVICE_MAP b ON a.dev_id = b.dev_id
+        LEFT OUTER JOIN
+    CM_KEEP_ALIVE c ON c.dtype = 'endpoint' AND c.did = b.ep_id 
+    inner join CM_USER_GATEWAY d on d.gw_id = a.gw_id
+    where d.email = '{}'
+    order by a.gw_id, b.dev_id   
+        '''.format(email)
+        
+if __name__ == '__main__':
+    email = '1a@aaa.com'
+    service = MD_KEEP_ALIVE()
+    print(service.get_status(email))

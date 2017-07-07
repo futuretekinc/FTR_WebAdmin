@@ -1,5 +1,5 @@
 {% extends "layout/main.html" %}
-{% from "macro/mc_form.html" import render_field, render_form, render_checkbox_field %}
+{% from "macro/mc_form.html" import render_field,render_form_noSubmit, render_form, render_checkbox_field %}
 {% from "macro/mc_header.html" import css_html_table,js_html_table %}
 {% from "obm/obm_tables.html" import show_gateway_table,foo_table %}
 
@@ -18,8 +18,57 @@
   
 <script type="text/javascript">
 $(document).ready(function(){
-	show_gateway_table();
+	fn_openMenu('M2_12_27');
 });
+
+
+$(document).ready(function(){
+	show_gateway_table();
+	fn_on_update_select_table_row();
+});
+
+
+function fn_on_update_select_table_row() {
+	$(document).on('click','.dataTables-gateway .table_view tr',function(){
+	
+		/** Click Device List */
+		var $this = $(this);
+		
+		function _text(obj, index) {
+			return $(obj).find('td:eq('+index+')').text();
+		}
+		
+		var gw_id = $('#hd_gw_id').val(_text($this,0))
+		var gw_name = $('#gw_name').val(_text($this,1))
+		var gw_location = $('#gw_location').val(_text($this,2))
+		console.log(gw_id);
+	});
+}
+
+function fn_on_delete() {
+	var $form = $('<form></form>');
+	$form.attr({'action' : '/obm/gateway_delete'});
+	$form.attr({'method' : 'post'});
+	$form.appendTo(document.body);	
+	var gw_id = $('#hd_gw_id').val();
+	$form.append($('<input type="hidden" name="gw_id" value="'+gw_id+'"/>'));
+	$form.submit();
+}
+
+/* 
+function fn_onDelete(dev_id) {
+	if ($('#tab-1').hasClass('active')) {
+		var $form = $('<form></form>');
+		$form.attr({'action' : '/obm/gateway_update'});
+		$form.attr({'method' : 'post'});
+		$form.appendTo(document.body);
+		
+		var hidden_input = $('<input type="hidden" name="dev_id" value="'+dev_id+'"/>')
+		$form.append(hidden_input);
+		$form.submit();
+	}
+}
+ */
 </script>
 
 {% endblock %}
@@ -30,26 +79,48 @@ $(document).ready(function(){
 
 <!-- header -->
 {% block page_header %}
-{{ render_breadscrumb(title=title,sub_1="게이트웨이관리",sub_2="게이트웨이") }}
+{{ render_breadscrumb(title=title,sub_1="게이트웨이관리",sub_2="게이트웨이조회") }}
 {% endblock %}
 
 <!-- main block -->
 {% block page_main %}
 {{super()}}
 <!-- BEGIN-MAIN -->
-<div class="ibox-content m-b-sm border-bottom">
-	<div class="row table-responsive">
-		<div class="col-lg-6">
-			{{ show_gateway_table() }}
-		</div>
-		<div class="col-lg-6">
-			<!-- END_POINT -->
-			{% call render_form(form, action_url='/obm/gateway_save', action_text='등록', class_='form',btn_class='btn btn-primary') %}
-				{{ render_field(form.gw_name) }}
-			{% endcall %}		
+
+<div class="row">
+	<div class="col-lg-8">
+		<div class="ibox-content m-b-sm border-bottom">
+			<div class="row table-responsive" id="form_div">
+					{% call render_form_noSubmit(form, action_url='/obm/gateway_update', action_text='수정', class_='form') %}
+						{{ render_field(form.hd_gw_id) }}
+				<div class="col-md-6">
+						{{ render_field(form.gw_name) }}
+				</div>
+				<div class="col-md-6">
+						{{ render_field(form.gw_location) }}
+				</div>
+				<div class="col-md-12">
+					<div class="text-right">
+						<button type="submit" class="btn btn-primary">수정</button>
+					</div>				
+				</div>
+					{% endcall %}		
+			</div>
 		</div>
 	</div>
 </div>
+<div class="row">
+	<div class="col-lg-8">
+		<div class="ibox-content m-b-sm border-bottom">
+			<div class="row table-responsive">
+				<div class="col-md-12">
+					{{ show_gateway_table() }}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
 <!-- END-MAIN -->
 
 {% endblock page_main %}

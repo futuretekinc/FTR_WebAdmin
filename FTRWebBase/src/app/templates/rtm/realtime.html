@@ -1,7 +1,31 @@
 {% extends "layout/main.html" %}
 {% from "macro/mc_form.html" import render_field, render_form, render_checkbox_field %}
 {% from "macro/mc_header.html" import css_html_table,js_html_table %}
-
+{% from "macro/mc_spinner.html" import spinner_wave %}
+{% macro show_table_data_readonly() -%}
+<table class="table table-striped table-bordered table-hover dataTables-table">
+	<colgroup>
+		<col width="*" />
+		<col width="16%" />
+		<col width="16%" />
+		<col width="16%" />
+		<col width="16%" />
+		<col width="16%" />
+	</colgroup>
+	<thead>
+		<tr>
+			<th class="text-center">게이트웨이</th>
+			<th class="text-center">센서노드</th>
+			<th class="text-center">센서타입</th>
+			<th class="text-center">날짜</th>
+			<th class="text-center">시간</th>
+			<th class="text-center">측정값</th>
+		</tr>
+	</thead>
+	<tbody class="table_view">
+	</tbody>
+</table>
+{%- endmacro %}
 <!-- CSS -->
 {% block styles %}
 {{super()}}
@@ -14,35 +38,184 @@
 {{super()}}
 {{js_html_table()}}  
 <script src="http://code.highcharts.com/highcharts.js"></script>  
+
 <script type="text/javascript">
+
+function fn_toUTC(ep_unix) {
+	var d = new Date(parseInt(ep_unix)*1000);
+	var year = d.getUTCFullYear();
+	var month = d.getUTCMonth();
+	var day = d.getUTCDate();
+	var hour = d.getUTCHours();
+	var min = d.getUTCMinutes();
+
+	var r = Date.UTC(year, month, day, hour, min );
+	var offsetInMs = ((d.getTimezoneOffset() * 60)* 1000);
+	return r - offsetInMs;
+}
+
+function get_highchart_options(pTitle,pSubTitle, xCategory, yLabel, series) {
+	var options = {
+		'chart' : { 'type' : 'spline' , 'zoomType' : 'x' }
+		, 'subtitle': {'text': pSubTitle}
+		, 'title': {'text': pTitle }
+		, 'legend' : {}
+		, 'plotOptions' : {
+	       	'spline' : {
+	       		'dataLabels' : { 'enabled' : true }
+				, 'marker' : { 'enabled' : false }
+				, 'connectNulls' : false
+			}
+		}
+		, 'xAxis' : { 'type' : 'datetime'}
+		, 'yAxis'  : {'title': {'text': yLabel } }			
+		, 'series' : series
+	};
+	return options;
+}
+
+</script>
+
+<script type="text/javascript">
+
+function on_change_gateway() {
+	var gw = $('#gateways option:selected').val();
+	console.log(gw)
+	var url = '/cmm/ep_type/' + gw;
+	$.postJSON(url,{},function(d){
+		//console.log(JSON.stringify(d,null,' '))
+		var data = d['data'];
+		var $select = $('#ep_types');
+		$select.html('');		
+		var html = '';
+		if(data.length > 0) {
+			for(var i = 0; i < data.length; i++) {
+				var d = data[i]
+				html += '<option value="'+d['code']+'">'+d['name']+'</option>';
+			}
+			$select.html(html);
+		} else {
+			$select.html('<option vlaue="">-</option>');
+		}
+	});
+}
+
 $(document).ready(function(){
-	//var options = {};
-	//Highcharts.chart('container', options);
-	Highcharts.chart('container', {'legend': {'layout': 'vertical', 'middle': 'vertical', 'right': 'vertical'},
-		 'plotOptions': {'series': {'pointStart': 2010}},
-		 'series': [{'data': [43934,
-		                      52503,
-		                      57177,
-		                      69658,
-		                      97031,
-		                      119931,
-		                      137133,
-		                      154175],
-		             'name': 'A'},
-		            {'data': [24334,
-		                      25253,
-		                      27177,
-		                      26958,
-		                      29031,
-		                      219931,
-		                      237133,
-		                      214175],
-		             'name': 'B'}],
-		 'subtitle': {'text': 'source: thesolarfoundation.com'},
-		 'title': {'text': 'Solar Employment Growth by Sector, 2010-2017'},
-		 'yAxis': {'title': {'text': 'Number of Employees'}}}
-		);
+	fn_openMenu('M1_19');
+	var today = $.datepicker.formatDate('yy-mm-dd',new Date());
+	$('#target_date').val(today);
+	$('label[for=gateways]').hide();
+	$('label[for=timetypes]').hide();
+	
+	on_change_gateway();
+	$('#gateways').change(on_change_gateway);
+	
+	$('#search_data').click(on_click_search_data);
+	
+	
 });
+
+function on_click_search_data() {
+	var gateway = $('#gateways option:selected').val();
+	var timetype = $('#timetypes option:selected').val();
+	var ep_type = $('#ep_types option:selected').val();
+	var target_date = $('#target_date').val();
+	
+	var param = { 
+			'gateway' : gateway
+			, 'timetype' : timetype
+			, 'ep_type' : ep_type
+			, 'target_date' : target_date 
+	};
+	
+	$.postJSON('/rtm/realtime',param,function(d){
+		console.log(d);
+		show_table_data(d);
+	});
+//	console.log(JSON.stringify(param, null, ' ' ));
+}
+
+function fn_parse_table_data(d) {
+	var table_data = [];
+	for(var i = 0; i < d['data'].length; i++) {
+		var t_data = d['data'][i]['table_data'];
+		table_data = table_data.concat(t_data);
+	}
+	return table_data;
+}
+
+function show_table_data(d) {
+	//var d = {"data": [] };
+	table_data = fn_parse_table_data(d);
+	var ds = [];
+
+	for (var i = 0; i < table_data.length; i++) {
+		var obj = table_data[i];
+		var buf = [];
+		buf.push(obj['gw_name']);
+		buf.push(obj['ep_name']);
+		buf.push(obj['ep_type']);
+		buf.push(obj['ep_day']);
+		buf.push(obj['ep_time']);
+		buf.push(obj['ep_data']);
+		//buf.push(obj['create_dt']);
+		ds.push(buf);
+	}
+	
+	//console.log("ds-->" + ds)
+	$('.dataTables-table').DataTable({
+		'processing' : true 
+		, 'bLengthChange' : false
+		, 'bFilter' : false
+		, 'bInfo' : false
+		, 'destroy' : true
+		, 'responsive' : true
+		, 'data' : ds
+		,'pagingType' : 'simple'
+		, "sDom": '<"top"<"actions">lfpi<"clear">><"clear">rt<"bottom">'
+		, 'columnDefs' : [ {'className' : 'text-center', 'targets' : 'all'} ]
+	});	
+	show_chart(d);
+}
+
+function fn_parse_chart_data(d) {
+	var series = [];
+	for(var i = 0; i < d['data'].length; i++) {
+		var c_data = d['data'][i]['chart_data'];
+		var endpoint = d['data'][i];
+	//	var _ctime = c_data['times'];
+		var _ctime = c_data['unix'];
+		var _cdata = c_data['values'];
+
+		var buf = [];
+		for(var j = 0 ; j < _ctime.length ; j++) {
+			var tmp = [];
+			tmp[0] = fn_toUTC(_ctime[j]);
+			tmp[1] = _cdata[j];
+			buf.push(tmp);
+		}
+		
+		var _cdataObj = { 'data' : buf , 'name' : endpoint['ep_name'] };
+		series.push(_cdataObj);
+		
+	}
+	
+	return series;
+}
+
+
+function show_chart(d) {
+	var title = $('#gateways option:selected').text();
+	var subtitle = $('#ep_types option:selected').text();
+	var ctime = [];
+	var series = fn_parse_chart_data(d);
+	var options = get_highchart_options(title,subtitle, ctime, '측정값', series);
+	
+	//console.log(JSON.stringify(options['series']))
+	// show_chart
+	var chart = Highcharts.chart('chart_container', options);
+	chart.setSize(null);
+}
 </script>
 
 {% endblock %}
@@ -53,17 +226,43 @@ $(document).ready(function(){
 
 <!-- header -->
 {% block page_header %}
-{{ render_breadscrumb(title=title,sub_1="실시간모니터링",sub_2="차트예제") }}
+{{ render_breadscrumb(title=title,sub_1="실시간모니터링",sub_2="실시간데이터 수집상태") }}
 {% endblock %}
 
 <!-- main block -->
 {% block page_main %}
 {{super()}}
 <!-- BEGIN-MAIN -->
+<div class="row">
+	<div class="col-md-2 col-md-offset-3">
+		{{ render_field(form.gateways) }}
+	</div>
+	<div class="col-md-2">
+		<select class="form-control input-sm" id="ep_types" name="ep_types">
+			<option value="">-</option>
+		</select>
+	</div>
+	<div class="col-md-2">
+		{{ render_field(form.timetypes) }}
+	</div>
+	<div class="col-md-2">
+		<input type="date" class="form-control input-sm" name="target_date" id="target_date" value="2017-07-05">
+	</div>
+	<div class="col-md-1">
+		<button class="btn btn-primary" id="search_data">조회</button>
+	</div>
+</div>
 <div class="ibox-content m-b-sm border-bottom">
 	<div class="row table-responsive">
 		<div class="col-lg-12">
-			<div id='container'></div>
+			<div id='chart_container' style="width:100%;height:320px">{{ spinner_wave() }}</div>
+		</div>
+	</div>
+</div>
+<div class="ibox-content m-b-sm border-bottom">
+	<div class="row table-responsive">
+		<div class="col-lg-12">
+			{{ show_table_data_readonly() }}	
 		</div>
 	</div>
 </div>

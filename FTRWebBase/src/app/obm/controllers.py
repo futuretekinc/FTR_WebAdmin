@@ -1,22 +1,43 @@
 # -*- coding : utf-8 -*-
 from flask import Response, jsonify, request, Blueprint, flash, redirect
+from flask_login import login_required
 
 from app import db, render_template, send_from_directory
+from app.obm.forms.obm_forms import OB_DEVICE_EDIT_FORM
 from app.obm.views import *
+
 
 obm = Blueprint('obm', __name__, url_prefix='/obm')
 
+
+@obm.route("/device_edit/<dev_id>", methods=['GET','POST'])
+@login_required
+def device_edit(dev_id):
+    service = MD_OB_DEVICE()
+    form = OB_DEVICE_EDIT_FORM(request.form)
+    if request.method == 'POST':
+        service.update_device(form, dev_id)
+        return redirect("/obm/devices")
+    
+    service.update_edit_form(form,dev_id)
+    return render_template("obm/device_edit.html",form=form)
+
+ob_gateway_view = login_required(OB_GATEWAY_VIEW().as_view('ob_gateway_view'))
+ob_gateway_add = login_required(OB_GATEWAY_ADD().as_view('ob_gateway_add'))
+obm.add_url_rule('/gateway_update',view_func=login_required(OB_GATEWAY_UPDATE().as_view('ob_gateway_update')))
+
 ob_resource_view = OB_RESOURCE_VIEW().as_view('ob_resource_view')
-ob_gateway_view = OB_GATEWAY_VIEW().as_view('ob_gateway_view')
 ob_endpoint_view = OB_ENDPOINT_VIEW().as_view('ob_endpoint_view')
 ob_device_detail_view = OB_DEVICE_DETAIL_VIEW().as_view('ob_device_detail_view')
 ob_eptype_view = OB_EPTYPE_VIEW().as_view('ob_eptype_view')  
 
-obm.add_url_rule('/resources',view_func=ob_resource_view)
-obm.add_url_rule('/resources_save',view_func=OB_RESOURCE_SAVE().as_view('ob_resources_save'))
+# obm.add_url_rule('/resources',view_func=ob_resource_view)
+# obm.add_url_rule('/resources_save',view_func=OB_RESOURCE_SAVE().as_view('ob_resources_save'))
 
 obm.add_url_rule('/gateway',view_func=ob_gateway_view)
-obm.add_url_rule('/gateway_save',view_func=OB_GATEWAY_SAVE().as_view('ob_gateway_save'))
+obm.add_url_rule('/add_gateway',view_func=ob_gateway_add)
+
+obm.add_url_rule('/gateway_save',view_func=login_required(OB_GATEWAY_SAVE().as_view('ob_gateway_save')))
 
 # -------------------------------------------------------------------------------------------
 

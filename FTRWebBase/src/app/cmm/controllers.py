@@ -1,14 +1,17 @@
 # -*- coding : utf-8 -*-
+
 from app import db, render_template, send_from_directory
-from flask import Response, jsonify, request,Blueprint,flash,redirect
+from app.cmm.forms import MasterCDForm, DetailCDForm, RegistrationUserForm
+from app.cmm.models import CM_CODEM, CM_CODED, CM_USER
 from app.cmm.services.menu_handler import find_menu
 from app.cmm.views.baseViews import RenderTemplateView, CM_CODED_VIEW
-from app.cmm.views.cmUserView import CM_USER_VIEW, CM_MENU_ITEM_VIEW,\
-    CM_USER_ROLE_VIEW
-from app.cmm.forms import MasterCDForm, DetailCDForm
-from app.cmm.models import CM_CODEM, CM_CODED
 from app.cmm.views.cmCodeView import CM_FIND_COMM_VIEW
+from app.cmm.views.cmUserView import CM_USER_VIEW, CM_MENU_ITEM_VIEW, CM_USER_ROLE_VIEW
 
+from flask import Response, jsonify, request, Blueprint, flash, redirect, url_for
+from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user 
+from app.cmm.utils.decimal_jsonizer import fn_jsonify
+from app.cmm.services.service import MD_EP_TYPE
 
 cmm = Blueprint('cmm', __name__, url_prefix='/cmm')
 
@@ -73,14 +76,41 @@ def detailCode():
     code = db.session.query(CM_CODEM).all()
     return redirect('/cmm/editcode')    
         
+@cmm.route('/account',methods=['GET','POST'])
+def account():
+    form = RegistrationUserForm(request.form)
+    if request.method == 'POST' and form.validate():
+        if addUser(form.email.data, form.username.data, form.password.data):
+            return redirect('/login')
+    return render_template('cmm/account.html',form=form)
 
-@cmm.route('/CMMAA001')
-def CMMAA001():
-    pass
+def existUser(email):
+    try:
+        db.session.query(CM_USER).filter(CM_USER.email == email).one()
+        return True
+    except Exception as e:
+        return False
 
-@cmm.route('/CMMAA002')
-def CMMAA002():
-    pass
+def addUser(email, username, password):
+    try:
+        user = CM_USER(email, username, password)
+        db.session.add(user)
+        db.session.commit()
+        return True
+    except Exception as e:
+        db.session.rollback()
+        return False
+        
+    
+@cmm.route('/account_check',methods=['POST'])
+def account_check():
+    try:
+        email = request.values.get('email')
+        return fn_jsonify({'data' : existUser(email) })
+    except Exception as e:
+        return fn_jsonify({'data' : False,'error' :str(e)})
+
+
 
 @cmm.route("/page/<filename>")
 def page(filename):
@@ -92,3 +122,9 @@ def menu(id=4):
     tree = find_menu()
     return render_template('cmm/menu.html',tree=tree)
 
+
+@cmm.route('/ep_type/<gw_id>',methods=['GET','POST'])
+def code_ep_type(gw_id):
+    service = MD_EP_TYPE()
+    return service.get_entry(gw_id)
+    

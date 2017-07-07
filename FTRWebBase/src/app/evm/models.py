@@ -9,6 +9,7 @@ class EV_ACTION_PUSH(db.Model):
     req_id = db.Column(db.NVARCHAR(32),nullable=False,primary_key=True)
     req_type = db.Column(db.NVARCHAR(32),nullable=False) # set_endpoint
     node_id = db.Column(db.NVARCHAR(32),nullable=False) 
+    use_yn = db.Column(db.NVARCHAR(1),nullable=False)
     req_value = db.Column(db.NVARCHAR(50),nullable=False) 
     req_stat = db.Column(db.NVARCHAR(30),nullable=False)
     retry_id = db.Column(db.NVARCHAR(32),nullable=True) # confirm check msg_id

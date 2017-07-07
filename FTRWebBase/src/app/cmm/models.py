@@ -31,9 +31,11 @@ class FlaskSession(db.Model):
 class CM_SYSTEM_LOG(db.Model):
     __tablename__ = "CM_SYSTEM_LOG"
     id = db.Column(db.Integer,primary_key=True)
+    msg_id = db.Column(db.String(50),nullable=True)
     log_type = db.Column(db.String(50),nullable=True)
 #     log = db.Column(CLOB) # Oracle
     log = db.Column(TEXT)
+    create_dt = db.Column(db.DATETIME,nullable=False,default=db.func.current_timestamp())
 
 class CM_MENU_ITEM(db.Model):
     __tablename__ = "CM_MENU_ITEM"
@@ -69,16 +71,44 @@ class CM_COMPANY(db.Model):
     company_name = db.Column(db.NVARCHAR(50),nullable=False)
     company_addr = db.Column(db.NVARCHAR(50),nullable=False)
     
+# class CM_USER(db.Model):
+#     __tablename__ = "CM_USER"
+#     user_id = db.Column(db.NVARCHAR(50),primary_key=True)
+#     role_name = db.Column(db.NVARCHAR(50),nullable=False)
+#     auth_key = db.Column(db.NVARCHAR(32),nullable=True)
+#     username = db.Column(db.NVARCHAR(50),nullable=False)
+#     password = db.Column(db.NVARCHAR(100))
+#     email = db.Column(db.NVARCHAR(50))
+#     phone = db.Column(db.NVARCHAR(50))
+
+
 class CM_USER(db.Model):
     __tablename__ = "CM_USER"
-    user_id = db.Column(db.NVARCHAR(50),primary_key=True)
-    company_id = db.Column(db.Integer,nullable=False)
-    role_name = db.Column(db.NVARCHAR(50),nullable=False)
-    auth_key = db.Column(db.NVARCHAR(32),nullable=False,default=uuid_gen)
-    username = db.Column(db.NVARCHAR(50),nullable=False)
-    password = db.Column(db.NVARCHAR(50))
-    email = db.Column(db.NVARCHAR(50))
-    phone = db.Column(db.NVARCHAR(50))
+    email = db.Column(db.NVARCHAR(50),primary_key=True)
+    name = db.Column(db.NVARCHAR(50),nullable=False)
+    passwd = db.Column(db.NVARCHAR(100),nullable=False)
+    role_name = db.Column(db.NVARCHAR(50),nullable=True)
+    auth_key = db.Column(db.NVARCHAR(32),nullable=True)
+    auth_yn = db.Column(db.NVARCHAR(1),nullable=False,default="Y")
+    last_login = db.Column(db.TIMESTAMP,default=db.func.current_timestamp())
+    create_dt = db.Column(db.TIMESTAMP,default=db.func.current_timestamp())
+    
+    def __init__(self,email, name, passwd):
+        self.email = email
+        self.name = name
+        self.passwd = passwd
+    
+
+ 
+ 
+ 
+    
+class CM_USER_GATEWAY(db.Model):
+    __tablename__ = "CM_USER_GATEWAY"
+    email = db.Column(db.NVARCHAR(50),primary_key=True)
+    gw_id = db.Column(db.NVARCHAR(50),primary_key=True)
+    create_dt = db.Column(db.DATETIME,nullable=False,default=db.func.current_timestamp())
+
 
 class CM_CODEM(db.Model):
     __tablename__ = "CM_CODEM"
