@@ -38,7 +38,19 @@ class OB_ENDPOINT_SAVE(View):
 class OB_ENDPOINT_UPDATE(View):
     methods = ['POST']
     def dispatch_request(self):
-        return ObEndpointHandler.do_update(request.form)
+        param = request.form
+        try:
+            ep_id = param.get('ep_id')
+            obj = db.session.query(OB_ENDPOINT) \
+                    .filter(OB_ENDPOINT.ep_id == ep_id) \
+                    .first()
+            obj.ep_name = str(param.get('ep_name'))
+            obj.ep_location = str(param.get('ep_location'))
+            db.session.commit()
+        except Exception as e:
+            err_msg = str(e)
+        return redirect('/obm/devices')
+
 
 class OB_ENDPOINT_DELETE(View):
     methods = ['POST']

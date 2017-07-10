@@ -98,8 +98,8 @@ function show_device_table(gw_id) {
 		{'data' : 'dev_name'} ,
 		{'data' : 'dev_type'} ,
 		{'data' : 'dev_location'} ,
-		{'data' : 'update'} ,
-		{'data' : 'delete'} ,
+	//	{'data' : 'update'} ,
+		//{'data' : 'delete'} ,
 	];
 	render_datatable_no_search_data(table_id, url, columns,{ 'gw_id' : gw_id } );
 }

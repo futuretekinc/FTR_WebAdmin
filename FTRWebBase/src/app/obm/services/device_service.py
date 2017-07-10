@@ -119,6 +119,10 @@ class ObDeviceHandler(object):
                             .one()
             db.session.delete(deleteObj)
             
+            deleteMap = db.session.query(OB_DEVICE_MAP).filter(OB_DEVICE_MAP.dev_id == dev_id).one()
+            
+            db.session.delete(deleteMap)
+
             # endpoint - DELETE
             deleteEp = db.session.query(OB_ENDPOINT) \
                             .filter(OB_ENDPOINT.dev_id == dev_id) \

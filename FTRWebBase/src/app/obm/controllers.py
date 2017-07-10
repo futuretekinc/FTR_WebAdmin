@@ -39,6 +39,19 @@ obm.add_url_rule('/add_gateway',view_func=ob_gateway_add)
 
 obm.add_url_rule('/gateway_save',view_func=login_required(OB_GATEWAY_SAVE().as_view('ob_gateway_save')))
 
+
+@obm.route('/gateway_delete',methods=['POST'])
+def gateway_delete():
+    try:
+        gw_id = request.form.get('gw_id')
+        gw = db.session.query(OB_GATEWAY).filter(OB_GATEWAY.register != 'Y').filter(OB_GATEWAY.gw_id == gw_id).one()
+        db.session.delete(gw)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        pass
+    return redirect('/obm/gateway')
+
 # -------------------------------------------------------------------------------------------
 
 ob_device_view = OB_DEVICE_VIEW().as_view('ob_device_view')
@@ -51,8 +64,28 @@ obm.add_url_rule('/device_delete',view_func=OB_DEVICE_DELETE().as_view('ob_devic
 obm.add_url_rule('/device_detail',view_func=ob_device_detail_view)
  
 # -------------------------------------------------------------------------------------------
-
-
+@obm.route('/mod_device',methods=['POST'])
+def mod_device():
+    try:
+        devId = request.form.get('dev_id')
+        devName = request.form.get('dev_name')
+        devLocation = request.form.get('dev_location')
+        print("-------------dev" , devName)
+        print("-----------------DEV----------------------")
+        print(request.form)
+        print(request.form.get('dev_id'))
+        print(request.form.get('dev_name'))
+        print(request.form.get('dev_location'))
+        device = db.session.query(OB_DEVICE).filter(OB_DEVICE.dev_id == devId).one()
+        device.dev_name = devName;
+        device.dev_location = devLocation;
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+    
+    return redirect('/obm/devices')
+    
+    
 obm.add_url_rule('/devtype_map',view_func=OB_DEVTYPE_MAP_VIEW().as_view('ob_devtype_map_view'))
 
 # -------------------------------------------------------------------------------------------

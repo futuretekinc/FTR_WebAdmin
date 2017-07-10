@@ -2,7 +2,7 @@
 from app import app, db
 from app.obm.models import *
 from app.cmm.utils.decimal_jsonizer import fn_jsonify
-
+from flask import render_template, g, abort, session, request, redirect, flash
 if __name__ == '__main__x':
     import requests
     r = requests.post('http://localhost:5000/obm/endpoints')
@@ -24,6 +24,7 @@ class ObEndpointHandler(object):
             obj = db.session.query(OB_ENDPOINT) \
                     .filter(OB_ENDPOINT.ep_id == ep_id) \
                     .first()
+            obj.ep_location = str(param.get('ep_location'))
             obj.ep_scale    = str(param.get('ep_scale'))
             obj.ep_unit     = str(param.get('ep_unit'))
             obj.ep_pr_host  = str(param.get('ep_pr_host'))
@@ -33,10 +34,9 @@ class ObEndpointHandler(object):
             obj.ep_month    = str(param.get('ep_month'))
             obj.ep_count    = str(param.get('ep_count'))
             db.session.commit()
-            return fn_jsonify({ 'result' : True })
         except Exception as e:
             err_msg = str(e)
-        return fn_jsonify({ 'result' : False, 'msg' : err_msg})
+        return redirect('/obm/devices')
 
     @staticmethod
     def do_save(param=None):

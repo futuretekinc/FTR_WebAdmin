@@ -1,6 +1,8 @@
 eclipse.preferences.version=1
 encoding//src/app/__init__.py=utf-8
-encoding//src/app/cmm/services.py=utf-8
+encoding//src/app/cmm/services/service.py=utf-8
 encoding//src/app/cmm/utils/sqlalchemy_session.py=utf-8
+encoding//src/app/evm/models.py=utf-8
 encoding//src/app/obm/models/ob_resources.py=utf-8
+encoding//src/app/rtm/models/rm_endpoint_data.py=utf-8
 encoding//src/runserver.py=utf-8

@@ -25,6 +25,11 @@ $(document).ready(function(){
 $(document).ready(function(){
 	show_gateway_table();
 	fn_on_update_select_table_row();
+	
+	$('#delete_gw').click(function(e){
+		e.preventDefault();
+		fn_on_delete();
+	})
 });
 
 
@@ -41,9 +46,18 @@ function fn_on_update_select_table_row() {
 		var gw_id = $('#hd_gw_id').val(_text($this,0))
 		var gw_name = $('#gw_name').val(_text($this,1))
 		var gw_location = $('#gw_location').val(_text($this,2))
+		
+		var register = _text($this,3);
+		if(register == '등록대기') {
+			$('#delete_gw').attr('disabled', false);
+		} else {
+			$('#delete_gw').attr('disabled', true);
+		}
 		console.log(gw_id);
 	});
 }
+
+
 
 function fn_on_delete() {
 	var $form = $('<form></form>');
@@ -101,6 +115,7 @@ function fn_onDelete(dev_id) {
 				</div>
 				<div class="col-md-12">
 					<div class="text-right">
+						<button id="delete_gw" class="btn btn-default" disabled="disabled">삭제</button>
 						<button type="submit" class="btn btn-primary">수정</button>
 					</div>				
 				</div>
