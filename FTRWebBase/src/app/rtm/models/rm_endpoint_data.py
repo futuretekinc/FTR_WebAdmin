@@ -16,3 +16,6 @@ class RM_ENDPOINT_DATA(db.Model):
     ep_offset = db.Column(db.Integer,nullable=False,default=0)
     ep_part = db.Column(db.Integer,nullable=False,default=0)
     create_dt = db.Column(db.DATETIME,default=db.func.current_timestamp())
+
+
+

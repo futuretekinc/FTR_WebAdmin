@@ -14,7 +14,7 @@ class MD_HIGHCHARTS():
 SELECT 
     (select gw_name from OB_GATEWAY where gw_id = d.gw_id) gw_name
     , (SELECT ep_name FROM OB_ENDPOINT WHERE ep_id = d.ep_id) ep_name
-    , (select comd_cdnm from CM_CODED where comd_code = d.ep_type) ep_type
+    , (select comd_cdnm from CM_CODED where  COMM_CODE='CHART_TYPE' and comd_code = d.ep_type) ep_type
     , if(ISNULL(d.ep_data), null, d.ep_data*1) ep_data
     , unix_timestamp(str_to_date(concat(d.ep_day, d.ep_time),'%%Y%%m%%d%%H%%i')) ep_unix    
     , d.ep_day
@@ -49,7 +49,7 @@ select
     , (select gw_name from OB_GATEWAY where gw_id = b.gw_id) gw_name    
     , d.ep_id
     , d.ep_type
-    , (select comd_cdnm from CM_CODED where comd_code = d.ep_type) ep_type_kor
+    , (select comd_cdnm from CM_CODED where COMM_CODE='CHART_TYPE' and comd_code = d.ep_type) ep_type_kor
     , d.ep_name
 from 
     CM_USER_GATEWAY a 
